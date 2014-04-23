@@ -13,6 +13,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    UIDevice *device = [UIDevice currentDevice];
+    //if (![[device model]isEqualToString:@"iPad Simulator"] && ![[device model]isEqualToString:@"iPhone Simulator"])
+    //    [self redirectLogToDocumentFolder];
     return YES;
 }
 							
@@ -43,4 +46,18 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (void)redirectLogToDocumentFolder
+{
+    // redirect stdout and stderr to log file in Document Folder
+    NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString * documentDirectory = [paths objectAtIndex:0];
+    NSString * fileName = [NSString stringWithFormat:@"PerfTest.log"];
+    NSString * logFilePath = [documentDirectory stringByAppendingPathComponent:fileName];
+    
+    NSFileManager * defaultManager = [NSFileManager defaultManager];
+    [defaultManager removeItemAtPath:logFilePath error:nil];
+    
+    freopen([logFilePath cStringUsingEncoding:NSASCIIStringEncoding], "a+", stdout);
+    freopen([logFilePath cStringUsingEncoding:NSASCIIStringEncoding], "a+", stderr);
+}
 @end

@@ -17,7 +17,61 @@
 		C945B549190639E000F088E4 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C945B547190639E000F088E4 /* Main_iPad.storyboard */; };
 		C945B54C190639E000F088E4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C945B54B190639E000F088E4 /* ViewController.m */; };
 		C945B54E190639E000F088E4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C945B54D190639E000F088E4 /* Images.xcassets */; };
+		C945B603190655B500F088E4 /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C945B5F31906558300F088E4 /* libcommon.a */; };
+		C945B604190655B500F088E4 /* libprocessing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C945B5FE190655AB00F088E4 /* libprocessing.a */; };
+		C945B605190655B500F088E4 /* libwelsenc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C945B5E81906555300F088E4 /* libwelsenc.a */; };
+		C945B62019066C5700F088E4 /* layer2.cfg in Resources */ = {isa = PBXBuildFile; fileRef = C945B61E19066C5700F088E4 /* layer2.cfg */; };
+		C945B62119066C5700F088E4 /* welsenc_ios.cfg in Resources */ = {isa = PBXBuildFile; fileRef = C945B61F19066C5700F088E4 /* welsenc_ios.cfg */; };
+		C945B62619066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv in Resources */ = {isa = PBXBuildFile; fileRef = C945B62519066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv */; };
+		C945B62D19066CF600F088E4 /* read_config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C945B62B19066CF600F088E4 /* read_config.cpp */; };
+		C945B62E19066CF600F088E4 /* welsenc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C945B62C19066CF600F088E4 /* welsenc.cpp */; };
+		C945B6481907636400F088E4 /* cfglist.cfg in Resources */ = {isa = PBXBuildFile; fileRef = C945B6471907636400F088E4 /* cfglist.cfg */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C945B5E71906555300F088E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C945B5E21906555300F088E4 /* welsenc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4CE4431118B6FFA00017DF25;
+			remoteInfo = welsenc;
+		};
+		C945B5E91906555300F088E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C945B5E21906555300F088E4 /* welsenc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4CE4432118B6FFA00017DF25;
+			remoteInfo = welsencTests;
+		};
+		C945B5F21906558300F088E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C945B5ED1906558300F088E4 /* common.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4CE443D518B722CD0017DF25;
+			remoteInfo = common;
+		};
+		C945B5F41906558300F088E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C945B5ED1906558300F088E4 /* common.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4CE443E518B722CD0017DF25;
+			remoteInfo = commonTests;
+		};
+		C945B5FD190655AB00F088E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C945B5F8190655AB00F088E4 /* processing.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4CE4443118B724B60017DF25;
+			remoteInfo = processing;
+		};
+		C945B5FF190655AB00F088E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C945B5F8190655AB00F088E4 /* processing.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4CE4444118B724B60017DF25;
+			remoteInfo = processingTests;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		C945B52F190639E000F088E4 /* encPerfTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = encPerfTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -36,6 +90,16 @@
 		C945B54B190639E000F088E4 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		C945B54D190639E000F088E4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C945B554190639E000F088E4 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		C945B5E21906555300F088E4 /* welsenc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = welsenc.xcodeproj; path = ../welsenc/welsenc.xcodeproj; sourceTree = "<group>"; };
+		C945B5ED1906558300F088E4 /* common.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = common.xcodeproj; path = ../../common/common.xcodeproj; sourceTree = "<group>"; };
+		C945B5F8190655AB00F088E4 /* processing.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = processing.xcodeproj; path = ../../../../processing/build/iOS/processing.xcodeproj; sourceTree = "<group>"; };
+		C945B61E19066C5700F088E4 /* layer2.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = layer2.cfg; path = ../../../../../../testbin/layer2.cfg; sourceTree = "<group>"; };
+		C945B61F19066C5700F088E4 /* welsenc_ios.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = welsenc_ios.cfg; path = ../../../../../../testbin/welsenc_ios.cfg; sourceTree = "<group>"; };
+		C945B62519066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CiscoVT2people_320x192_12fps.yuv; path = ../../../../../../res/CiscoVT2people_320x192_12fps.yuv; sourceTree = "<group>"; };
+		C945B62919066CC900F088E4 /* read_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = read_config.h; path = ../../../../../console/enc/inc/read_config.h; sourceTree = "<group>"; };
+		C945B62B19066CF600F088E4 /* read_config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = read_config.cpp; path = ../../../../../console/enc/src/read_config.cpp; sourceTree = "<group>"; };
+		C945B62C19066CF600F088E4 /* welsenc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = welsenc.cpp; path = ../../../../../console/enc/src/welsenc.cpp; sourceTree = "<group>"; };
+		C945B6471907636400F088E4 /* cfglist.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cfglist.cfg; path = ../../../../../../testbin/cfglist.cfg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +107,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C945B603190655B500F088E4 /* libcommon.a in Frameworks */,
+				C945B604190655B500F088E4 /* libprocessing.a in Frameworks */,
+				C945B605190655B500F088E4 /* libwelsenc.a in Frameworks */,
 				C945B535190639E000F088E4 /* CoreGraphics.framework in Frameworks */,
 				C945B537190639E000F088E4 /* UIKit.framework in Frameworks */,
 				C945B533190639E000F088E4 /* Foundation.framework in Frameworks */,
@@ -72,6 +139,9 @@
 		C945B531190639E000F088E4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C945B5F8190655AB00F088E4 /* processing.xcodeproj */,
+				C945B5ED1906558300F088E4 /* common.xcodeproj */,
+				C945B5E21906555300F088E4 /* welsenc.xcodeproj */,
 				C945B532190639E000F088E4 /* Foundation.framework */,
 				C945B534190639E000F088E4 /* CoreGraphics.framework */,
 				C945B536190639E000F088E4 /* UIKit.framework */,
@@ -83,6 +153,7 @@
 		C945B538190639E000F088E4 /* encPerfTestApp */ = {
 			isa = PBXGroup;
 			children = (
+				C945B62719066C9300F088E4 /* console */,
 				C945B541190639E000F088E4 /* AppDelegate.h */,
 				C945B542190639E000F088E4 /* AppDelegate.m */,
 				C945B544190639E000F088E4 /* Main_iPhone.storyboard */,
@@ -98,12 +169,69 @@
 		C945B539190639E000F088E4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C945B6471907636400F088E4 /* cfglist.cfg */,
+				C945B62519066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv */,
+				C945B61E19066C5700F088E4 /* layer2.cfg */,
+				C945B61F19066C5700F088E4 /* welsenc_ios.cfg */,
 				C945B53A190639E000F088E4 /* encPerfTestApp-Info.plist */,
 				C945B53B190639E000F088E4 /* InfoPlist.strings */,
 				C945B53E190639E000F088E4 /* main.m */,
 				C945B540190639E000F088E4 /* encPerfTestApp-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		C945B5E31906555300F088E4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C945B5E81906555300F088E4 /* libwelsenc.a */,
+				C945B5EA1906555300F088E4 /* welsencTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C945B5EE1906558300F088E4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C945B5F31906558300F088E4 /* libcommon.a */,
+				C945B5F51906558300F088E4 /* commonTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C945B5F9190655AB00F088E4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C945B5FE190655AB00F088E4 /* libprocessing.a */,
+				C945B600190655AB00F088E4 /* processingTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C945B62719066C9300F088E4 /* console */ = {
+			isa = PBXGroup;
+			children = (
+				C945B62819066CAE00F088E4 /* inc */,
+				C945B62A19066CD100F088E4 /* src */,
+			);
+			name = console;
+			sourceTree = "<group>";
+		};
+		C945B62819066CAE00F088E4 /* inc */ = {
+			isa = PBXGroup;
+			children = (
+				C945B62919066CC900F088E4 /* read_config.h */,
+			);
+			name = inc;
+			sourceTree = "<group>";
+		};
+		C945B62A19066CD100F088E4 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				C945B62B19066CF600F088E4 /* read_config.cpp */,
+				C945B62C19066CF600F088E4 /* welsenc.cpp */,
+			);
+			name = src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -146,6 +274,20 @@
 			mainGroup = C945B526190639E000F088E4;
 			productRefGroup = C945B530190639E000F088E4 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C945B5EE1906558300F088E4 /* Products */;
+					ProjectRef = C945B5ED1906558300F088E4 /* common.xcodeproj */;
+				},
+				{
+					ProductGroup = C945B5F9190655AB00F088E4 /* Products */;
+					ProjectRef = C945B5F8190655AB00F088E4 /* processing.xcodeproj */;
+				},
+				{
+					ProductGroup = C945B5E31906555300F088E4 /* Products */;
+					ProjectRef = C945B5E21906555300F088E4 /* welsenc.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				C945B52E190639E000F088E4 /* encPerfTestApp */,
@@ -153,13 +295,62 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		C945B5E81906555300F088E4 /* libwelsenc.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libwelsenc.a;
+			remoteRef = C945B5E71906555300F088E4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C945B5EA1906555300F088E4 /* welsencTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = welsencTests.xctest;
+			remoteRef = C945B5E91906555300F088E4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C945B5F31906558300F088E4 /* libcommon.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libcommon.a;
+			remoteRef = C945B5F21906558300F088E4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C945B5F51906558300F088E4 /* commonTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = commonTests.xctest;
+			remoteRef = C945B5F41906558300F088E4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C945B5FE190655AB00F088E4 /* libprocessing.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libprocessing.a;
+			remoteRef = C945B5FD190655AB00F088E4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C945B600190655AB00F088E4 /* processingTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = processingTests.xctest;
+			remoteRef = C945B5FF190655AB00F088E4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
 		C945B52D190639E000F088E4 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C945B62019066C5700F088E4 /* layer2.cfg in Resources */,
 				C945B549190639E000F088E4 /* Main_iPad.storyboard in Resources */,
+				C945B62119066C5700F088E4 /* welsenc_ios.cfg in Resources */,
 				C945B54E190639E000F088E4 /* Images.xcassets in Resources */,
+				C945B62619066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv in Resources */,
+				C945B6481907636400F088E4 /* cfglist.cfg in Resources */,
 				C945B546190639E000F088E4 /* Main_iPhone.storyboard in Resources */,
 				C945B53D190639E000F088E4 /* InfoPlist.strings in Resources */,
 			);
@@ -173,8 +364,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				C945B54C190639E000F088E4 /* ViewController.m in Sources */,
+				C945B62D19066CF600F088E4 /* read_config.cpp in Sources */,
 				C945B543190639E000F088E4 /* AppDelegate.m in Sources */,
 				C945B53F190639E000F088E4 /* main.m in Sources */,
+				C945B62E19066CF600F088E4 /* welsenc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,7 +480,25 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "encPerfTestApp/encPerfTestApp-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					APPLE_IOS,
+					"Debug=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"\"$(SRCROOT)/../../../../api/svc\"",
+					"\"$(SRCROOT)/../../../../common/inc\"",
+					"\"$(SRCROOT)/../../../../encoder/core/inc\"",
+					"\"$(SRCROOT)/../../../../processing/interface\"",
+				);
 				INFOPLIST_FILE = "encPerfTestApp/encPerfTestApp-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/videommf/Gang/openh264/openh264/codec/build/iOS/enc/welsenc/build/Release-iphoneos",
+					"/Users/videommf/Gang/openh264/openh264/codec/build/iOS/common/build/Release-iphoneos",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -300,7 +511,22 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "encPerfTestApp/encPerfTestApp-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = APPLE_IOS;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"\"$(SRCROOT)/../../../../api/svc\"",
+					"\"$(SRCROOT)/../../../../common/inc\"",
+					"\"$(SRCROOT)/../../../../encoder/core/inc\"",
+					"\"$(SRCROOT)/../../../../processing/interface\"",
+				);
 				INFOPLIST_FILE = "encPerfTestApp/encPerfTestApp-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/videommf/Gang/openh264/openh264/codec/build/iOS/enc/welsenc/build/Release-iphoneos",
+					"/Users/videommf/Gang/openh264/openh264/codec/build/iOS/common/build/Release-iphoneos",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -325,6 +551,7 @@
 				C945B566190639E000F088E4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
