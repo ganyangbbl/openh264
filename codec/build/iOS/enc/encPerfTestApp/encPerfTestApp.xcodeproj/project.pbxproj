@@ -25,7 +25,8 @@
 		C945B62619066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv in Resources */ = {isa = PBXBuildFile; fileRef = C945B62519066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv */; };
 		C945B62D19066CF600F088E4 /* read_config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C945B62B19066CF600F088E4 /* read_config.cpp */; };
 		C945B62E19066CF600F088E4 /* welsenc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C945B62C19066CF600F088E4 /* welsenc.cpp */; };
-		C945B6481907636400F088E4 /* cfglist.cfg in Resources */ = {isa = PBXBuildFile; fileRef = C945B6471907636400F088E4 /* cfglist.cfg */; };
+		C945B64C1907CE5500F088E4 /* CiscoVT2people_160x96_6fps.yuv in Resources */ = {isa = PBXBuildFile; fileRef = C945B64B1907CE5500F088E4 /* CiscoVT2people_160x96_6fps.yuv */; };
+		C945B64E1907D11400F088E4 /* caselist.cfg in Resources */ = {isa = PBXBuildFile; fileRef = C945B64D1907D11400F088E4 /* caselist.cfg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,7 +100,8 @@
 		C945B62919066CC900F088E4 /* read_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = read_config.h; path = ../../../../../console/enc/inc/read_config.h; sourceTree = "<group>"; };
 		C945B62B19066CF600F088E4 /* read_config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = read_config.cpp; path = ../../../../../console/enc/src/read_config.cpp; sourceTree = "<group>"; };
 		C945B62C19066CF600F088E4 /* welsenc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = welsenc.cpp; path = ../../../../../console/enc/src/welsenc.cpp; sourceTree = "<group>"; };
-		C945B6471907636400F088E4 /* cfglist.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cfglist.cfg; path = ../../../../../../testbin/cfglist.cfg; sourceTree = "<group>"; };
+		C945B64B1907CE5500F088E4 /* CiscoVT2people_160x96_6fps.yuv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CiscoVT2people_160x96_6fps.yuv; path = ../../../../../../res/CiscoVT2people_160x96_6fps.yuv; sourceTree = "<group>"; };
+		C945B64D1907D11400F088E4 /* caselist.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = caselist.cfg; path = ../../../../../../testperf/caselist.cfg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,7 +171,8 @@
 		C945B539190639E000F088E4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				C945B6471907636400F088E4 /* cfglist.cfg */,
+				C945B64D1907D11400F088E4 /* caselist.cfg */,
+				C945B64B1907CE5500F088E4 /* CiscoVT2people_160x96_6fps.yuv */,
 				C945B62519066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv */,
 				C945B61E19066C5700F088E4 /* layer2.cfg */,
 				C945B61F19066C5700F088E4 /* welsenc_ios.cfg */,
@@ -350,8 +353,9 @@
 				C945B62119066C5700F088E4 /* welsenc_ios.cfg in Resources */,
 				C945B54E190639E000F088E4 /* Images.xcassets in Resources */,
 				C945B62619066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv in Resources */,
-				C945B6481907636400F088E4 /* cfglist.cfg in Resources */,
+				C945B64C1907CE5500F088E4 /* CiscoVT2people_160x96_6fps.yuv in Resources */,
 				C945B546190639E000F088E4 /* Main_iPhone.storyboard in Resources */,
+				C945B64E1907D11400F088E4 /* caselist.cfg in Resources */,
 				C945B53D190639E000F088E4 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -36,7 +36,7 @@ extern int EncMain(int argc, char **argv);
 
 - (NSArray *) getCommandSet:(NSBundle *)bundle {
     NSError *error;
-    NSString * str = [NSString stringWithContentsOfFile:[bundle pathForResource:@"cfglist" ofType:@"cfg"] encoding:NSASCIIStringEncoding error:&error];
+    NSString * str = [NSString stringWithContentsOfFile:[bundle pathForResource:@"caselist" ofType:@"cfg"] encoding:NSASCIIStringEncoding error:&error];
     if (error == nil) {
         return [str componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
     }

@@ -64,7 +64,7 @@ OPENH264_PERFTEST_IOS_COMMON_PATH=${CURRENT_PATH}/../codec/build/iOS/common
 OPENH264_PERFTEST_IOS_PROCESSING_PATH=${CURRENT_PATH}/../codec/processing/build/iOS
 OPENH264_PERFTEST_IOS_ENCODER_PATH=${CURRENT_PATH}/../codec/build/iOS/enc/welsenc
 OPENH264_PERFTEST_IOS_DECODER_PATH=${CURRENT_PATH}/../codec/build/iOS/dec/welsdec
-OPENH264_PERFTEST_IOS_PROJECT_PATH=${CURRENT_PATH}/../codec/build/iOS/enc/encDemo
+OPENH264_PERFTEST_IOS_PROJECT_PATH=${CURRENT_PATH}/../codec/build/iOS/enc/encPerfTestApp
 OPENH264_PERFTEST_IOS_APP_PATH=${OPENH264_PERFTEST_IOS_PROJECT_PATH}/build
 OPENH264_PERFTEST_IOS_STD_OUT_ERR=/dev/null
 
@@ -132,7 +132,7 @@ fi
 
 ###############################################################################
 cd ${OPENH264_PERFTEST_IOS_PROJECT_PATH}
-PROJECT_FILE_NAME="encDemo"
+PROJECT_FILE_NAME="encPerfTestApp"
 TARGET_NAME=${PROJECT_FILE_NAME}
 
 buildProject ${PROJECT_FILE_NAME} ${TARGET_NAME} ${OPENH264_PERFTEST_IOS_DEBUG_RELEASE} ${OPENH264_PERFTEST_IOS_PLATFORM}
@@ -142,14 +142,27 @@ exit 1
 fi
 
 ###############################################################################
-#begin to run unit test app
+#generate test case
+
+echo "###################################################################"
+echo "##Generate test case"
+
+cd ${CURRENT_PATH}
+GENERATECASE_FILE_NAME="GenerateCase.py"
+CASE_FILE_NAME="case.cfg"
+CASELIST_FILE_NAME="caselist.cfg"
+python ${GENERATECASE_FILE_NAME} ${CASE_FILE_NAME} ${CASELIST_FILE_NAME}
+
+
+###############################################################################
+#begin to run perf test app
 
 echo "###################################################################"
 echo "##Install and launch performance test app"
 
 OPENH264_PERFTEST_IOS_CONSOLE="/tmp/wme_encTest.log"
-OPENH264_PERFTEST_IOS_APP_FOR_SIMULATOR=${OPENH264_PERFTEST_IOS_APP_PATH}/${OPENH264_PERFTEST_IOS_DEBUG_RELEASE}-iphonesimulator/encDemo.app
-OPENH264_PERFTEST_IOS_APP_FOR_DEVICE=${OPENH264_PERFTEST_IOS_APP_PATH}/${OPENH264_PERFTEST_IOS_DEBUG_RELEASE}-iphoneos/encDemo.app
+OPENH264_PERFTEST_IOS_APP_FOR_SIMULATOR=${OPENH264_PERFTEST_IOS_APP_PATH}/${OPENH264_PERFTEST_IOS_DEBUG_RELEASE}-iphonesimulator/encPerfTestApp.app
+OPENH264_PERFTEST_IOS_APP_FOR_DEVICE=${OPENH264_PERFTEST_IOS_APP_PATH}/${OPENH264_PERFTEST_IOS_DEBUG_RELEASE}-iphoneos/encPerfTestApp.app
 
 OPENH264_PERFTEST_IOS_TOOL_LAUNCH_ON_SIMULATOR="ios-sim"
 OPENH264_PERFTEST_IOS_TOOL_INSTALL_ON_DEVICE="./fruitstrap"
