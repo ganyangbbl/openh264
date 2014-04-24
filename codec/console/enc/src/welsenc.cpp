@@ -898,12 +898,12 @@ int ProcessEncodingSvcWithConfig (ISVCEncoder* pPtrEnc, int argc, char** argv) {
   pSrcPic->pData[2] = pSrcPic->pData[1] + (iSourceWidth*iSourceHeight>>2);
 
   //update sSvcParam
-  //if target output resolution is not set, use the source size
   for (int iLayer=0; iLayer<sSvcParam.iSpatialLayerNum; iLayer++) {
     SSpatialLayerConfig* pDLayer = &sSvcParam.sSpatialLayers[iLayer];
     sSvcParam.iPicWidth = WELS_MAX(sSvcParam.iPicWidth, pDLayer->iVideoWidth);
     sSvcParam.iPicHeight = WELS_MAX(sSvcParam.iPicHeight, pDLayer->iVideoHeight);
   }
+  //if target output resolution is not set, use the source size
   sSvcParam.iPicWidth = (!sSvcParam.iPicWidth)?iSourceWidth:sSvcParam.iPicWidth;
   sSvcParam.iPicHeight =  (!sSvcParam.iPicHeight)?iSourceHeight:sSvcParam.iPicHeight;
 
