@@ -98,9 +98,9 @@ class GenerateCase:
                 matchResult_resolution = re.search(self.pattern_resolution, sequence[seq_index])
                 width = int(matchResult_resolution.groups()[0])
                 height = int(matchResult_resolution.groups()[1])
-                command_seq = "dummy %s -org %s -bf %s -numl 1 %s -sw %d -sh %d" \
+                command_seq = "dummy %s -org %s -bf %s -numl 1 %s -sw %d -sh %d -dw 0 %d -dh 0 %d" \
                           %(self.enccfgFilename,sequence[seq_index],self.bsFilename, \
-                            self.layercfgFilename,width,height)
+                            self.layercfgFilename,width,height,width,height)
                 for bit_index in range(0,len(bitrate)):
                     command_bit = command_seq+" ltarb 0 %s"%(bitrate[bit_index])
                     command = command_bit+"\n"
