@@ -127,11 +127,9 @@ int ParseLayerConfig( CReadConfig & cRdLayerCfg, const int iLayer, SEncParamExt&
         continue;
       if (strTag[0].compare ("FrameWidth") == 0) {
         pDLayer->iVideoWidth	= atoi (strTag[1].c_str());
-        pSvcParam.iPicWidth = WELS_MAX(pSvcParam.iPicWidth, pDLayer->iVideoWidth);
         //pSvcParam.iPicWidth stands for the target output resolution
       } else if (strTag[0].compare ("FrameHeight") == 0) {
         pDLayer->iVideoHeight	= atoi (strTag[1].c_str());
-        pSvcParam.iPicHeight = WELS_MAX(pSvcParam.iPicHeight, pDLayer->iVideoHeight);
         //pSvcParam.iPicHeight stands for the target output resolution
       } else if (strTag[0].compare ("FrameRateOut") == 0) {
         pDLayer->fFrameRate = (float)atof (strTag[1].c_str());
@@ -511,7 +509,6 @@ int ParseCommandLine (int argc, char** argv, SSourcePicture* pSrcPic, SEncParamE
       unsigned int	iLayer = atoi (argv[n++]);
       SSpatialLayerConfig* pDLayer = &pSvcParam.sSpatialLayers[iLayer];
       pDLayer->iVideoWidth =  atoi (argv[n++]);
-      pSvcParam.iPicWidth = WELS_MAX(pSvcParam.iPicWidth, pDLayer->iVideoWidth);
       //pSvcParam.iPicWidth stands for the target output resolution
     }
 
@@ -519,7 +516,6 @@ int ParseCommandLine (int argc, char** argv, SSourcePicture* pSrcPic, SEncParamE
       unsigned int	iLayer = atoi (argv[n++]);
       SSpatialLayerConfig* pDLayer = &pSvcParam.sSpatialLayers[iLayer];
       pDLayer->iVideoHeight =  atoi (argv[n++]);
-      pSvcParam.iPicHeight = WELS_MAX(pSvcParam.iPicHeight, pDLayer->iVideoHeight);
       //pSvcParam.iPicHeight stands for the target output resolution
     }
 
@@ -907,6 +903,11 @@ int ProcessEncodingSvcWithConfig (ISVCEncoder* pPtrEnc, int argc, char** argv) {
 
   //update sSvcParam
   //if target output resolution is not set, use the source size
+  for (int iLayer=0; iLayer<sSvcParam.iSpatialLayerNum; iLayer++) {
+    SSpatialLayerConfig* pDLayer = &sSvcParam.sSpatialLayers[iLayer];
+    sSvcParam.iPicWidth = WELS_MAX(sSvcParam.iPicWidth, pDLayer->iVideoWidth);
+    sSvcParam.iPicHeight = WELS_MAX(sSvcParam.iPicHeight, pDLayer->iVideoHeight);
+  }
   sSvcParam.iPicWidth = (!sSvcParam.iPicWidth)?iSourceWidth:sSvcParam.iPicWidth;
   sSvcParam.iPicHeight =  (!sSvcParam.iPicHeight)?iSourceHeight:sSvcParam.iPicHeight;
 
