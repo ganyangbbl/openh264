@@ -14,8 +14,8 @@
 {
     // Override point for customization after application launch.
     UIDevice *device = [UIDevice currentDevice];
-    //if (![[device model]isEqualToString:@"iPad Simulator"] && ![[device model]isEqualToString:@"iPhone Simulator"])
-    //    [self redirectLogToDocumentFolder];
+    if (![[device model]isEqualToString:@"iPad Simulator"] && ![[device model]isEqualToString:@"iPhone Simulator"])
+        [self redirectLogToDocumentFolder];
     return YES;
 }
 							

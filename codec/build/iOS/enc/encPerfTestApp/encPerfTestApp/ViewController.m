@@ -9,6 +9,7 @@
 extern int EncMain(int argc, char **argv);
 
 #import "ViewController.h"
+#import "UIDevice-Hardware.h"
 
 @interface ViewController ()
 
@@ -20,10 +21,10 @@ extern int EncMain(int argc, char **argv);
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    
     NSBundle * bundle = [NSBundle mainBundle];
     NSArray * lines = [self getCommandSet:bundle];
     [self DoEncTest:bundle commandLineSet:lines];
+    
     
     statusText.text = @"Test completed!";
 }
@@ -51,9 +52,9 @@ extern int EncMain(int argc, char **argv);
     for (int i=0; i < [lines count] - 1; i++)
     {
         NSString * strLine = [lines objectAtIndex:i];
-        NSArray * strArgv = [strLine componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        for (int j=0; j < [strArgv count]; j++) {
-            NSString * strTemp = [strArgv objectAtIndex:j];
+        NSArray * encArgv = [strLine componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        for (int j=0; j < [encArgv count]; j++) {
+            NSString * strTemp = [encArgv objectAtIndex:j];
             if (1 == j || 3== j || 8 == j) {
                 argv[j] = [[bundle pathForResource:strTemp ofType:nil] UTF8String];
             }
@@ -64,9 +65,18 @@ extern int EncMain(int argc, char **argv);
                 argv[j] = [strTemp UTF8String];
             }
         }
-        NSLog(@"Test file: %@\ncfg file: %@\nbs file:%@\n", [strArgv objectAtIndex:1], [strArgv objectAtIndex:3], [strArgv objectAtIndex:5]);
-        EncMain([strArgv count], (char**)&argv[0]);
+        NSLog(@"######Encoder Test %d Start########\nTest file: %@\ncfg file: %@\nbs file: %@\n", i+1, [encArgv objectAtIndex:3], [encArgv objectAtIndex:1], [encArgv objectAtIndex:5]);
+
+        EncMain((int)[encArgv count], (char**)&argv[0]);
+        [self GetCPUInfo];
+        NSLog(@"######Encoder Test %d Completed########\n",i+1);
     }
+}
+
+- (void) GetCPUInfo {
+    UIDevice * device = [UIDevice currentDevice];
+    NSString * cpuUsage = [device cpuUsage];
+    NSLog(@"\nCPU Usage: %@\n",cpuUsage);
 }
 
 - (void)didReceiveMemoryWarning
