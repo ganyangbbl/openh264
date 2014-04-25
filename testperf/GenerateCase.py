@@ -25,7 +25,6 @@ class GenerateCase:
 
         self.enccfgFilename = "welsenc_ios.cfg"
         self.layercfgFilename = "layer2.cfg"
-        self.bsFilename = "test.264"
 
     def CloseFile(self):
         self.fin_casefile.close()
@@ -66,7 +65,7 @@ class GenerateCase:
                     continue
                 elif re.search(self.pattern_end,line):
                     break
-                elif line[0] == '\n':
+                elif line[0] == '#':
                     continue
                 else:
                     info = line.split()
@@ -91,6 +90,7 @@ class GenerateCase:
             strErr = "No test sequence!\n"
             print strErr
             return
+        bsFilename_Prefix = "encPerfTest_"
         for i in range(0,len(sequence_info)):
             sequence = sequence_info[i]
             bitrate = bitrate_info[i]
@@ -98,12 +98,16 @@ class GenerateCase:
                 matchResult_resolution = re.search(self.pattern_resolution, sequence[seq_index])
                 width = int(matchResult_resolution.groups()[0])
                 height = int(matchResult_resolution.groups()[1])
+                bsFilename = bsFilename_Prefix + sequence[seq_index].replace(".yuv",".264")
                 command_seq = "dummy %s -org %s -bf %s -numl 1 %s -sw %d -sh %d -dw 0 %d -dh 0 %d" \
-                          %(self.enccfgFilename,sequence[seq_index],self.bsFilename, \
+                          %(self.enccfgFilename,sequence[seq_index],bsFilename, \
                             self.layercfgFilename,width,height,width,height)
+                count = 0
                 for bit_index in range(0,len(bitrate)):
                     command_bit = command_seq+" ltarb 0 %s"%(bitrate[bit_index])
                     command = command_bit+"\n"
+                    command = command.replace(".264","_%d.264"%(count))
+                    count += 1
                     self.fout_listfile.write(command)
         
 def main():
