@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C93BFC4D190A4B40004B5457 /* UIDevice-Hardware.m in Sources */ = {isa = PBXBuildFile; fileRef = C93BFC4C190A4B40004B5457 /* UIDevice-Hardware.m */; };
 		C945B533190639E000F088E4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C945B532190639E000F088E4 /* Foundation.framework */; };
 		C945B535190639E000F088E4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C945B534190639E000F088E4 /* CoreGraphics.framework */; };
 		C945B537190639E000F088E4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C945B536190639E000F088E4 /* UIKit.framework */; };
@@ -75,6 +76,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C93BFC4B190A4B40004B5457 /* UIDevice-Hardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice-Hardware.h"; sourceTree = "<group>"; };
+		C93BFC4C190A4B40004B5457 /* UIDevice-Hardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice-Hardware.m"; sourceTree = "<group>"; };
 		C945B52F190639E000F088E4 /* encPerfTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = encPerfTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C945B532190639E000F088E4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C945B534190639E000F088E4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -162,6 +165,8 @@
 				C945B547190639E000F088E4 /* Main_iPad.storyboard */,
 				C945B54A190639E000F088E4 /* ViewController.h */,
 				C945B54B190639E000F088E4 /* ViewController.m */,
+				C93BFC4B190A4B40004B5457 /* UIDevice-Hardware.h */,
+				C93BFC4C190A4B40004B5457 /* UIDevice-Hardware.m */,
 				C945B54D190639E000F088E4 /* Images.xcassets */,
 				C945B539190639E000F088E4 /* Supporting Files */,
 			);
@@ -368,6 +373,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C945B54C190639E000F088E4 /* ViewController.m in Sources */,
+				C93BFC4D190A4B40004B5457 /* UIDevice-Hardware.m in Sources */,
 				C945B62D19066CF600F088E4 /* read_config.cpp in Sources */,
 				C945B543190639E000F088E4 /* AppDelegate.m in Sources */,
 				C945B53F190639E000F088E4 /* main.m in Sources */,

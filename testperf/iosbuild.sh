@@ -231,3 +231,55 @@ else
 echo "parameters for platform is wrong : ${OPENH264_PERFTEST_IOS_PLATFORM}"
 fi
 
+###############################################################################
+#Begin to analyse test result
+
+echo "###################################################################"
+echo "##Begin to analyse test result"
+
+cd ${CURRENT_PATH}
+
+if [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphonesimulator ] ; then
+echo "Complete test on simulator!"
+exit 1
+
+elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ] ; then
+
+echo "mount device"
+OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE="ifuse"
+if ! which ${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} ; then
+echo "${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} is not found, please install ifuse"
+exit 1
+else
+echo "Find ${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE}"
+fi
+
+PERF_TEST_APP_ID="cisco.encPerfTestApp"
+PERF_TEST_RESULT_PATH="result"
+if [ ! -d ${PERF_TEST_RESULT_PATH} ] ; then
+mkdir ${PERF_TEST_RESULT_PATH}
+fi
+
+echo "${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} --documents ${PERF_TEST_APP_ID} ${PERF_TEST_RESULT_PATH}"
+${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} --documents ${PERF_TEST_APP_ID} result
+EXTRACTRESULT_FILE_NAME="ExtractTestResult.py"
+LOG_FILE_NAME="PerfTest.log"
+RESULT_FILE_NAME="Performance.csv"
+ls ${PERF_TEST_RESULT_PATH}
+echo "cp ${PERF_TEST_RESULT_PATH}/${LOG_FILE_NAME} ${CURRENT_PATH}"
+cp ${PERF_TEST_RESULT_PATH}/${LOG_FILE_NAME} ${CURRENT_PATH}
+rm ${RESULT_FILE_NAME}
+python ${EXTRACTRESULT_FILE_NAME} ${LOG_FILE_NAME} ${RESULT_FILE_NAME}
+
+rm -r *.trace
+ls ${PERF_TEST_RESULT_PATH}
+cp ${PERF_TEST_RESULT_PATH}/${LOG_FILE_NAME} ${CURRENT_PATH}
+rm ${RESULT_FILE_NAME}
+python ${EXTRACTRESULT_FILE_NAME} ${LOG_FILE_NAME} ${RESULT_FILE_NAME}
+cat ${RESULT_FILE_NAME}
+
+umount ${PERF_TEST_RESULT_PATH}
+
+echo "Complete Extract Test Result"
+fi
+
