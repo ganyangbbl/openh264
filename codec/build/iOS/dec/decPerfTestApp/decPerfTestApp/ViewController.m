@@ -21,8 +21,8 @@ extern int DecMain(int argc, char **argv);
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     NSBundle * bundle = [NSBundle mainBundle];
-    //NSArray * lines = [self getCommandSet:bundle];
-    //[self DoDecTest:bundle commandLineSet:lines];
+    NSArray * lines = [self getCommandSet:bundle];
+    [self DoDecTest:bundle commandLineSet:lines];
     
     
     statusText.text = @"Test completed!";
@@ -37,7 +37,7 @@ extern int DecMain(int argc, char **argv);
 
 - (NSArray *) getCommandSet:(NSBundle *)bundle {
     NSError *error;
-    NSString * str = [NSString stringWithContentsOfFile:[bundle pathForResource:@"caselist" ofType:@"cfg"] encoding:NSASCIIStringEncoding error:&error];
+    NSString * str = [NSString stringWithContentsOfFile:[bundle pathForResource:@"dec_caselist" ofType:@"cfg"] encoding:NSASCIIStringEncoding error:&error];
     if (error == nil) {
         return [str componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
     }

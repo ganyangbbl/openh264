@@ -51,7 +51,7 @@
     // redirect stdout and stderr to log file in Document Folder
     NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString * documentDirectory = [paths objectAtIndex:0];
-    NSString * fileName = [NSString stringWithFormat:@"PerfTest.log"];
+    NSString * fileName = [NSString stringWithFormat:@"DecPerfTest.log"];
     NSString * logFilePath = [documentDirectory stringByAppendingPathComponent:fileName];
     
     NSFileManager * defaultManager = [NSFileManager defaultManager];

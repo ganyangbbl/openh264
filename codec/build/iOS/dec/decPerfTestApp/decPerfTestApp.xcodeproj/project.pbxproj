@@ -23,6 +23,7 @@
 		C9B8E31C190E4EF10035243C /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B8E2F5190E4A970035243C /* libcommon.a */; };
 		C9B8E31D190E4EF40035243C /* libwelsdec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B8E2EC190E4A8D0035243C /* libwelsdec.a */; };
 		C9B8E328190E51240035243C /* UIDevice-Hardware.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B8E327190E51240035243C /* UIDevice-Hardware.m */; };
+		C9B8E339190E5C760035243C /* dec_caselist.cfg in Resources */ = {isa = PBXBuildFile; fileRef = C9B8E338190E5C760035243C /* dec_caselist.cfg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 		C9B8E2EF190E4A970035243C /* common.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = common.xcodeproj; path = ../../common/common.xcodeproj; sourceTree = "<group>"; };
 		C9B8E326190E51240035243C /* UIDevice-Hardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice-Hardware.h"; sourceTree = "<group>"; };
 		C9B8E327190E51240035243C /* UIDevice-Hardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice-Hardware.m"; sourceTree = "<group>"; };
+		C9B8E338190E5C760035243C /* dec_caselist.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dec_caselist.cfg; path = ../../../../../../testperf/dec_caselist.cfg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +153,7 @@
 		C9B8E2A6190E495E0035243C /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C9B8E338190E5C760035243C /* dec_caselist.cfg */,
 				C9B8E2A7190E495E0035243C /* decPerfTestApp-Info.plist */,
 				C9B8E2A8190E495E0035243C /* InfoPlist.strings */,
 				C9B8E2AB190E495E0035243C /* main.m */,
@@ -302,6 +305,7 @@
 				C9B8E2BB190E495E0035243C /* Images.xcassets in Resources */,
 				C9B8E2B3190E495E0035243C /* Main_iPhone.storyboard in Resources */,
 				C9B8E2AA190E495E0035243C /* InfoPlist.strings in Resources */,
+				C9B8E339190E5C760035243C /* dec_caselist.cfg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
