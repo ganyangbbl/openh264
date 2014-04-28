@@ -53,18 +53,37 @@ fi
 #fi
 
 echo "Performance Test will run on ${OPENH264_PERFTEST_IOS_PLATFORM} with ${OPENH264_PERFTEST_IOS_DEBUG_RELEASE}"
+BASE_PATH=$(cd `dirname $0`; pwd)
+
+###############################################################################
+#generate test case
+
+echo "###################################################################"
+echo "##Generate test case"
+
+cd ${BASE_PATH}
+GENERATECASE_FILE_NAME="GenerateCase.py"
+CASE_FILE_NAME="case.cfg"
+CASELIST_FILE_NAME="caselist.cfg"
+if [-f ${CASELIST_FILE_NAME}] ; then
+rm ${CASELIST_FILE_NAME}
+fi
+python ${GENERATECASE_FILE_NAME} ${CASE_FILE_NAME} ${CASELIST_FILE_NAME}
+if [ ! -f ${CASELIST_FILE_NAME} ] ; then
+echo "Generate test case failed"
+exit 1
+fi
 
 
 ###############################################################################
 echo "###################################################################"
 echo "##Building libcommon, libprocessing, libwelsenc, libwelsdec and test app"
 
-CURRENT_PATH=`pwd`
-OPENH264_PERFTEST_IOS_COMMON_PATH=${CURRENT_PATH}/../codec/build/iOS/common
-OPENH264_PERFTEST_IOS_PROCESSING_PATH=${CURRENT_PATH}/../codec/processing/build/iOS
-OPENH264_PERFTEST_IOS_ENCODER_PATH=${CURRENT_PATH}/../codec/build/iOS/enc/welsenc
-OPENH264_PERFTEST_IOS_DECODER_PATH=${CURRENT_PATH}/../codec/build/iOS/dec/welsdec
-OPENH264_PERFTEST_IOS_PROJECT_PATH=${CURRENT_PATH}/../codec/build/iOS/enc/encPerfTestApp
+OPENH264_PERFTEST_IOS_COMMON_PATH=${BASE_PATH}/../codec/build/iOS/common
+OPENH264_PERFTEST_IOS_PROCESSING_PATH=${BASE_PATH}/../codec/processing/build/iOS
+OPENH264_PERFTEST_IOS_ENCODER_PATH=${BASE_PATH}/../codec/build/iOS/enc/welsenc
+OPENH264_PERFTEST_IOS_DECODER_PATH=${BASE_PATH}/../codec/build/iOS/dec/welsdec
+OPENH264_PERFTEST_IOS_PROJECT_PATH=${BASE_PATH}/../codec/build/iOS/enc/encPerfTestApp
 OPENH264_PERFTEST_IOS_APP_PATH=${OPENH264_PERFTEST_IOS_PROJECT_PATH}/build
 OPENH264_PERFTEST_IOS_STD_OUT_ERR=/dev/null
 
@@ -141,18 +160,6 @@ echo "Build ${PROJECT_FILE_NAME} failed, exit now"
 exit 1
 fi
 
-###############################################################################
-#generate test case
-
-echo "###################################################################"
-echo "##Generate test case"
-
-cd ${CURRENT_PATH}
-GENERATECASE_FILE_NAME="GenerateCase.py"
-CASE_FILE_NAME="case.cfg"
-CASELIST_FILE_NAME="caselist.cfg"
-python ${GENERATECASE_FILE_NAME} ${CASE_FILE_NAME} ${CASELIST_FILE_NAME}
-
 
 ###############################################################################
 #begin to run perf test app
@@ -167,7 +174,7 @@ OPENH264_PERFTEST_IOS_APP_FOR_DEVICE=${OPENH264_PERFTEST_IOS_APP_PATH}/${OPENH26
 OPENH264_PERFTEST_IOS_TOOL_LAUNCH_ON_SIMULATOR="ios-sim"
 OPENH264_PERFTEST_IOS_TOOL_INSTALL_ON_DEVICE="./fruitstrap"
 
-cd ${CURRENT_PATH}
+cd ${BASE_PATH}
 
 if [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphonesimulator ]; then
 
@@ -237,7 +244,7 @@ fi
 echo "###################################################################"
 echo "##Begin to analyse test result"
 
-cd ${CURRENT_PATH}
+cd ${BASE_PATH}
 
 if [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphonesimulator ] ; then
 echo "Complete test on simulator!"
@@ -265,17 +272,31 @@ ${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} --documents ${PERF_TEST_APP_ID} resul
 EXTRACTRESULT_FILE_NAME="ExtractTestResult.py"
 LOG_FILE_NAME="PerfTest.log"
 RESULT_FILE_NAME="Performance.csv"
+while [ ! -f "${PERF_TEST_RESULT_PATH}/${LOG_FILE_NAME}" ] 
+do
+sleep 5
+echo "wait for mounting"
+done
+echo "mount successfully"
+
 ls ${PERF_TEST_RESULT_PATH}
-echo "cp ${PERF_TEST_RESULT_PATH}/${LOG_FILE_NAME} ${CURRENT_PATH}"
-cp ${PERF_TEST_RESULT_PATH}/${LOG_FILE_NAME} ${CURRENT_PATH}
+
+if [ -f ${RESULT_FILE_NAME} ] ; then
 rm ${RESULT_FILE_NAME}
+fi
+if [ -f ${LOG_FILE_NAME} ] ; then
+rm ${LOG_FILE_NAME}
+fi
+cp ${PERF_TEST_RESULT_PATH}/${LOG_FILE_NAME} ${BASE_PATH}
 python ${EXTRACTRESULT_FILE_NAME} ${LOG_FILE_NAME} ${RESULT_FILE_NAME}
+if [ ! -f ${RESULT_FILE_NAME} ] ; then
+echo "Extract result failed"
+umount ${PERF_TEST_RESULT_PATH}
+exit 1
+fi
 
 rm -r *.trace
-ls ${PERF_TEST_RESULT_PATH}
-cp ${PERF_TEST_RESULT_PATH}/${LOG_FILE_NAME} ${CURRENT_PATH}
-rm ${RESULT_FILE_NAME}
-python ${EXTRACTRESULT_FILE_NAME} ${LOG_FILE_NAME} ${RESULT_FILE_NAME}
+
 cat ${RESULT_FILE_NAME}
 
 umount ${PERF_TEST_RESULT_PATH}
