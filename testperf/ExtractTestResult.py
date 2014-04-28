@@ -91,15 +91,13 @@ def main():
         LogFilename = sys.argv[1]
         ResultFilename = sys.argv[2]
 
-    generator = ExtractTestResult()
-    if generator.OpenFile(LogFilename, ResultFilename):
-        return 1
+    extractor = ExtractTestResult()
+    if extractor.OpenFile(LogFilename, ResultFilename):
+        sys.exit(1)
     print "Load log file: %s"%(LogFilename)
-    generator.Do()
+    extractor.Do()
     print "Generate Result in %s"%(ResultFilename)
-    generator.CloseFile()
-
-    return 0
+    extractor.CloseFile()
 
 if __name__ == "__main__":
     main()

@@ -125,13 +125,12 @@ def main():
 
     generator = GenerateCase()
     if generator.OpenFile(CaseFilename, ListFilename):
-        return 1
+        sys.exit(1)
     print "Load case cfg: %s"%(CaseFilename)
     generator.Do()
     print "Generate Test Case in %s"%(ListFilename)
     generator.CloseFile()
 
-    return 0
 
 if __name__ == "__main__":
     main()
