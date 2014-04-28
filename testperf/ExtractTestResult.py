@@ -3,15 +3,9 @@ import re
 import sys
 
 class ExtractTestResult:
-    def __init__(self, LogFilename, ResultFilename):
-        if os.path.exists(LogFilename):
-            self.fin_logfile = open(LogFilename, "r")
-        else:
-            strErr = "No such file %s\n"%(LogFilename)
-            print strErr
-            return 1
-
-        self.fout_resultfile = open(ResultFilename, "w")
+    def __init__(self):
+        self.fin_logfile = ""
+        self.fout_resultfile = ""
 
         self.pattern_testfile = "Test file:"
         self.pattern_cfgfile = "cfg file:"
@@ -21,7 +15,19 @@ class ExtractTestResult:
         self.pattern_FPS = "FPS:"
         self.pattern_CpuUsage = "CPU Usage:"
 
-        self.test_info = ["","","","","",""]
+        self.test_info = ["","","","","",""]\
+
+    def OpenFile(self, LogFilename, ResultFilename):
+        if os.path.exists(LogFilename):
+            self.fin_logfile = open(LogFilename, "r")
+        else:
+            strErr = "No such file %s\n"%(LogFilename)
+            print strErr
+            return 1
+
+        self.fout_resultfile = open(ResultFilename, "w")
+
+        return 0
 
     def CloseFile(self):
         self.fin_logfile.close()
@@ -36,8 +42,6 @@ class ExtractTestResult:
                     self.WriteResult()
             else:
                 break
-
-        self.CloseFile()
 
     def ParseTestCase(self,line):
         pattern_endcase = "#+Encoder Test (\d+) Start#+"
@@ -87,10 +91,13 @@ def main():
         LogFilename = sys.argv[1]
         ResultFilename = sys.argv[2]
 
-    generator = ExtractTestResult(LogFilename, ResultFilename)
+    generator = ExtractTestResult()
+    if generator.OpenFile(LogFilename, ResultFilename):
+        return
     print "Load log file: %s"%(LogFilename)
     generator.Do()
     print "Generate Result in %s"%(ResultFilename)
+    generator.CloseFile()
 
 if __name__ == "__main__":
     main()

@@ -3,15 +3,9 @@ import re
 import sys
 
 class GenerateCase:
-    def __init__(self, CaseFilename, ListFilename):
-        if os.path.exists(CaseFilename):
-            self.fin_casefile = open(CaseFilename, "r")
-        else:
-            strErr = "No such file %s\n"%(CaseFilename)
-            print strErr
-            return 1
-
-        self.fout_listfile = open(ListFilename, "w")
+    def __init__(self):
+        self.fin_casefile = ""
+        self.fout_listfile = ""
 
         self.pattern_resolution = "(\d+)x(\d+)"
         self.pattern_testsequence = "TestSequence"
@@ -25,6 +19,18 @@ class GenerateCase:
 
         self.enccfgFilename = "welsenc_ios.cfg"
         self.layercfgFilename = "layer2.cfg"
+
+    def OpenFile(CaseFilename, ListFilename):
+        if os.path.exists(CaseFilename):
+            self.fin_casefile = open(CaseFilename, "r")
+        else:
+            strErr = "No such file %s\n"%(CaseFilename)
+            print strErr
+            return 1
+
+        self.fout_listfile = open(ListFilename, "w")
+
+        return 0
 
     def CloseFile(self):
         self.fin_casefile.close()
@@ -47,7 +53,6 @@ class GenerateCase:
                 break
 
         self.WriteCase(sequence_info,targetbitrate_info)
-        self.CloseFile()
 
     def ParseCaseBlock(self,line,keyword):
         pattern_caseblock = "#+%s#+"%(keyword)
@@ -118,10 +123,13 @@ def main():
         CaseFilename = sys.argv[1]
         ListFilename = sys.argv[2]
 
-    generator = GenerateCase(CaseFilename, ListFilename)
+    generator = GenerateCase()
+    if generator.OpenFile(CaseFilename, ListFilename):
+        return
     print "Load case cfg: %s"%(CaseFilename)
     generator.Do()
     print "Generate Test Case in %s"%(ListFilename)
+    generator.CloseFile()
 
 if __name__ == "__main__":
     main()
