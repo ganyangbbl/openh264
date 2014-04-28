@@ -93,11 +93,13 @@ def main():
 
     generator = ExtractTestResult()
     if generator.OpenFile(LogFilename, ResultFilename):
-        return
+        return 1
     print "Load log file: %s"%(LogFilename)
     generator.Do()
     print "Generate Result in %s"%(ResultFilename)
     generator.CloseFile()
+
+    return 0
 
 if __name__ == "__main__":
     main()
