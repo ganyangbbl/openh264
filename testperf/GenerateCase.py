@@ -20,7 +20,7 @@ class GenerateCase:
         self.enccfgFilename = "welsenc_ios.cfg"
         self.layercfgFilename = "layer2.cfg"
 
-    def OpenFile(CaseFilename, ListFilename):
+    def OpenFile(self, CaseFilename, ListFilename):
         if os.path.exists(CaseFilename):
             self.fin_casefile = open(CaseFilename, "r")
         else:
