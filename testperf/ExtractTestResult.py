@@ -7,7 +7,7 @@ class ExtractTestResult:
         if os.path.exists(LogFilename):
             self.fin_logfile = open(LogFilename, "r")
         else:
-            strErr = "No such file %s\n"%(self.fin_logfile)
+            strErr = "No such file %s\n"%(LogFilename)
             print strErr
             return 1
 

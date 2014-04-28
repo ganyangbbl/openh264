@@ -7,7 +7,7 @@ class GenerateCase:
         if os.path.exists(CaseFilename):
             self.fin_casefile = open(CaseFilename, "r")
         else:
-            strErr = "No such file %s\n"%(self.fin_casefile)
+            strErr = "No such file %s\n"%(CaseFilename)
             print strErr
             return 1
 
