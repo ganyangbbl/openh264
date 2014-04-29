@@ -48,26 +48,23 @@ extern int DecMain(int argc, char **argv);
 }
 
 - (void) DoDecTest:(NSBundle *)bundle commandLineSet:(NSArray *)lines {
-    const char * argv[32];
+    char * argv[32];
     for (int i=0; i < [lines count] - 1; i++)
     {
         NSString * strLine = [lines objectAtIndex:i];
-        NSArray * encArgv = [strLine componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        for (int j=0; j < [encArgv count]; j++) {
-            NSString * strTemp = [encArgv objectAtIndex:j];
-            if (1 == j || 3== j || 8 == j) {
-                argv[j] = [[bundle pathForResource:strTemp ofType:nil] UTF8String];
+        NSArray * decArgv = [strLine componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        for (int j=0; j < [decArgv count]; j++) {
+            NSString * strTemp = [decArgv objectAtIndex:j];
+            if (1 == j) {
+                argv[j] = (char*)[[bundle pathForResource:strTemp ofType:nil] UTF8String];
             }
-            else if (5 == j) {
-                argv[j] = [[NSString stringWithFormat:@"%@/%@", [self getPathForWrite], strTemp] UTF8String];
-            }
-            else {
-                argv[j] = [strTemp UTF8String];
+            else if (2 == j) {
+                argv[j] = (char*)[[NSString stringWithFormat:@"%@/%@", [self getPathForWrite], strTemp] UTF8String];
             }
         }
-        NSLog(@"######Decoder Test %d Start########\nTest file: %@\ncfg file: %@\nbs file: %@\n", i+1, [encArgv objectAtIndex:3], [encArgv objectAtIndex:1], [encArgv objectAtIndex:5]);
+        NSLog(@"######Decoder Test %d Start########\nTest file: %@\nYUV file: %@\n", i+1, [decArgv objectAtIndex:1], [decArgv objectAtIndex:2]);
         
-        //DecMain((int)[encArgv count], (char**)&argv[0]);
+        DecMain((int)[decArgv count], argv);
         [self GetCPUInfo];
         NSLog(@"######Decoder Test %d Completed########\n",i+1);
     }
