@@ -5,7 +5,8 @@ import sys
 class GenerateCase:
     def __init__(self):
         self.fin_casefile = ""
-        self.fout_listfile = ""
+        self.fout_enclistfile = ""
+        self.fout_declistfile = ""
 
         self.pattern_resolution = "(\d+)x(\d+)"
         self.pattern_testsequence = "TestSequence"
@@ -28,13 +29,17 @@ class GenerateCase:
             print strErr
             return 1
 
-        self.fout_listfile = open(ListFilename, "w")
+        self.fout_enclistfile = open(ListFilename[0], "w")
+        if ListFilename[1] != "":
+            self.fout_declistfile = open(ListFilename[1], "w")
 
         return 0
 
     def CloseFile(self):
         self.fin_casefile.close()
-        self.fout_listfile.close()
+        self.fout_enclistfile.close()
+        if self.fout_declistfile != "":
+            self.fout_declistfile.close()
 
     def Do(self):
         sequence_info = []
@@ -95,7 +100,8 @@ class GenerateCase:
             strErr = "No test sequence!\n"
             print strErr
             return
-        bsFilename_Prefix = "encPerfTest_"
+        bsFilename_Prefix = "PerfTest_"
+        yuvFilename_Prefix = "PerfTest_"
         for i in range(0,len(sequence_info)):
             sequence = sequence_info[i]
             bitrate = bitrate_info[i]
@@ -104,24 +110,33 @@ class GenerateCase:
                 width = int(matchResult_resolution.groups()[0])
                 height = int(matchResult_resolution.groups()[1])
                 bsFilename = bsFilename_Prefix + sequence[seq_index].replace(".yuv",".264")
+                yuvFilename = yuvFilename_Prefix + sequence[seq_index]
                 command_seq = "dummy %s -org %s -bf %s -numl 1 %s -sw %d -sh %d -dw 0 %d -dh 0 %d" \
                           %(self.enccfgFilename,sequence[seq_index],bsFilename, \
                             self.layercfgFilename,width,height,width,height)
                 count = 0
                 for bit_index in range(0,len(bitrate)):
                     command_bit = command_seq+" ltarb 0 %s"%(bitrate[bit_index])
-                    command = command_bit+"\n"
-                    command = command.replace(".264","_%d.264"%(count))
+                    enc_command = command_bit+"\n"
+                    enc_command = enc_command.replace(".264","_%d.264"%(count))
+                    dec_command = "dummy %s %s\n"%(bsFilename,yuvFilename)
+                    dec_command = dec_command.replace(".264","_%d.264"%(count))
                     count += 1
-                    self.fout_listfile.write(command)
+                    self.fout_enclistfile.write(enc_command)
+                    if self.fout_declistfile != "":
+                        self.fout_declistfile.write(dec_command)
         
 def main():
+    ListFilename = ["",""]
     if len(sys.argv)<3:
         CaseFilename = "case.cfg";
-        ListFilename = "caselist.cfg"
+        ListFilename[0] = "enc_caselist.cfg"
+        ListFilename[1] = "dec_caselist.cfg"
     else:
         CaseFilename = sys.argv[1]
-        ListFilename = sys.argv[2]
+        ListFilename[0] = sys.argv[2]
+        if len(sys.argv)>3:
+            ListFilename[1] = sys.argv[3]
 
     generator = GenerateCase()
     if generator.OpenFile(CaseFilename, ListFilename):
