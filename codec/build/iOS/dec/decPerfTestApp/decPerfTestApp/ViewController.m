@@ -1,13 +1,12 @@
 //
 //  ViewController.m
-//  encPerfTestApp
+//  decPerfTestApp
 //
-//  Created by video.mmf on 4/22/14.
-//  Copyright (c) 2014 cisco. All rights reserved.
+//  Created by video.mmf on 4/28/14.
+//  Copyright (c) 2014 wme. All rights reserved.
 //
 
-extern int EncMain(int argc, char **argv);
-
+extern int DecMain(int argc, char **argv);
 #import "ViewController.h"
 #import "UIDevice-Hardware.h"
 
@@ -23,11 +22,12 @@ extern int EncMain(int argc, char **argv);
 	// Do any additional setup after loading the view, typically from a nib.
     NSBundle * bundle = [NSBundle mainBundle];
     NSArray * lines = [self getCommandSet:bundle];
-    [self DoEncTest:bundle commandLineSet:lines];
+    [self DoDecTest:bundle commandLineSet:lines];
     
     
     statusText.text = @"Test completed!";
 }
+
 
 - (NSString*) getPathForWrite {
     NSArray * pathes =  NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -37,7 +37,7 @@ extern int EncMain(int argc, char **argv);
 
 - (NSArray *) getCommandSet:(NSBundle *)bundle {
     NSError *error;
-    NSString * str = [NSString stringWithContentsOfFile:[bundle pathForResource:@"enc_caselist" ofType:@"cfg"] encoding:NSASCIIStringEncoding error:&error];
+    NSString * str = [NSString stringWithContentsOfFile:[bundle pathForResource:@"dec_caselist" ofType:@"cfg"] encoding:NSASCIIStringEncoding error:&error];
     if (error == nil) {
         return [str componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
     }
@@ -47,7 +47,7 @@ extern int EncMain(int argc, char **argv);
     
 }
 
-- (void) DoEncTest:(NSBundle *)bundle commandLineSet:(NSArray *)lines {
+- (void) DoDecTest:(NSBundle *)bundle commandLineSet:(NSArray *)lines {
     const char * argv[32];
     for (int i=0; i < [lines count] - 1; i++)
     {
@@ -65,11 +65,11 @@ extern int EncMain(int argc, char **argv);
                 argv[j] = [strTemp UTF8String];
             }
         }
-        NSLog(@"######Encoder Test %d Start########\nTest file: %@\ncfg file: %@\nbs file: %@\n", i+1, [encArgv objectAtIndex:3], [encArgv objectAtIndex:1], [encArgv objectAtIndex:5]);
-
-        EncMain((int)[encArgv count], (char**)&argv[0]);
+        NSLog(@"######Decoder Test %d Start########\nTest file: %@\ncfg file: %@\nbs file: %@\n", i+1, [encArgv objectAtIndex:3], [encArgv objectAtIndex:1], [encArgv objectAtIndex:5]);
+        
+        //DecMain((int)[encArgv count], (char**)&argv[0]);
         [self GetCPUInfo];
-        NSLog(@"######Encoder Test %d Completed########\n",i+1);
+        NSLog(@"######Decoder Test %d Completed########\n",i+1);
     }
 }
 

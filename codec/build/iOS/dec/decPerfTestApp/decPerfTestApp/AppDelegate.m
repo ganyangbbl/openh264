@@ -1,9 +1,9 @@
 //
 //  AppDelegate.m
-//  encPerfTestApp
+//  decPerfTestApp
 //
-//  Created by video.mmf on 4/22/14.
-//  Copyright (c) 2014 cisco. All rights reserved.
+//  Created by video.mmf on 4/28/14.
+//  Copyright (c) 2014 wme. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -51,7 +51,7 @@
     // redirect stdout and stderr to log file in Document Folder
     NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString * documentDirectory = [paths objectAtIndex:0];
-    NSString * fileName = [NSString stringWithFormat:@"EncPerfTest.log"];
+    NSString * fileName = [NSString stringWithFormat:@"DecPerfTest.log"];
     NSString * logFilePath = [documentDirectory stringByAppendingPathComponent:fileName];
     
     NSFileManager * defaultManager = [NSFileManager defaultManager];
