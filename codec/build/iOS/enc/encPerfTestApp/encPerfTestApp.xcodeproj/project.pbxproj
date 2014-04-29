@@ -23,11 +23,10 @@
 		C945B605190655B500F088E4 /* libwelsenc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C945B5E81906555300F088E4 /* libwelsenc.a */; };
 		C945B62019066C5700F088E4 /* layer2.cfg in Resources */ = {isa = PBXBuildFile; fileRef = C945B61E19066C5700F088E4 /* layer2.cfg */; };
 		C945B62119066C5700F088E4 /* welsenc_ios.cfg in Resources */ = {isa = PBXBuildFile; fileRef = C945B61F19066C5700F088E4 /* welsenc_ios.cfg */; };
-		C945B62619066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv in Resources */ = {isa = PBXBuildFile; fileRef = C945B62519066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv */; };
 		C945B62D19066CF600F088E4 /* read_config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C945B62B19066CF600F088E4 /* read_config.cpp */; };
 		C945B62E19066CF600F088E4 /* welsenc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C945B62C19066CF600F088E4 /* welsenc.cpp */; };
-		C945B64C1907CE5500F088E4 /* CiscoVT2people_160x96_6fps.yuv in Resources */ = {isa = PBXBuildFile; fileRef = C945B64B1907CE5500F088E4 /* CiscoVT2people_160x96_6fps.yuv */; };
 		C9B8E348190E5C930035243C /* enc_caselist.cfg in Resources */ = {isa = PBXBuildFile; fileRef = C9B8E347190E5C930035243C /* enc_caselist.cfg */; };
+		C9B8E37E190FA8ED0035243C /* Logi7500_320x192.yuv in Resources */ = {isa = PBXBuildFile; fileRef = C9B8E37D190FA8ED0035243C /* Logi7500_320x192.yuv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,12 +98,11 @@
 		C945B5F8190655AB00F088E4 /* processing.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = processing.xcodeproj; path = ../../../../processing/build/iOS/processing.xcodeproj; sourceTree = "<group>"; };
 		C945B61E19066C5700F088E4 /* layer2.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = layer2.cfg; path = ../../../../../../testbin/layer2.cfg; sourceTree = "<group>"; };
 		C945B61F19066C5700F088E4 /* welsenc_ios.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = welsenc_ios.cfg; path = ../../../../../../testbin/welsenc_ios.cfg; sourceTree = "<group>"; };
-		C945B62519066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CiscoVT2people_320x192_12fps.yuv; path = ../../../../../../res/CiscoVT2people_320x192_12fps.yuv; sourceTree = "<group>"; };
 		C945B62919066CC900F088E4 /* read_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = read_config.h; path = ../../../../../console/enc/inc/read_config.h; sourceTree = "<group>"; };
 		C945B62B19066CF600F088E4 /* read_config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = read_config.cpp; path = ../../../../../console/enc/src/read_config.cpp; sourceTree = "<group>"; };
 		C945B62C19066CF600F088E4 /* welsenc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = welsenc.cpp; path = ../../../../../console/enc/src/welsenc.cpp; sourceTree = "<group>"; };
-		C945B64B1907CE5500F088E4 /* CiscoVT2people_160x96_6fps.yuv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CiscoVT2people_160x96_6fps.yuv; path = ../../../../../../res/CiscoVT2people_160x96_6fps.yuv; sourceTree = "<group>"; };
 		C9B8E347190E5C930035243C /* enc_caselist.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = enc_caselist.cfg; path = ../../../../../../testperf/enc_caselist.cfg; sourceTree = "<group>"; };
+		C9B8E37D190FA8ED0035243C /* Logi7500_320x192.yuv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Logi7500_320x192.yuv; path = ../../../../../../../TestVideo/Logi7500_320x192.yuv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,9 +174,8 @@
 		C945B539190639E000F088E4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C9B8E37D190FA8ED0035243C /* Logi7500_320x192.yuv */,
 				C9B8E347190E5C930035243C /* enc_caselist.cfg */,
-				C945B64B1907CE5500F088E4 /* CiscoVT2people_160x96_6fps.yuv */,
-				C945B62519066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv */,
 				C945B61E19066C5700F088E4 /* layer2.cfg */,
 				C945B61F19066C5700F088E4 /* welsenc_ios.cfg */,
 				C945B53A190639E000F088E4 /* encPerfTestApp-Info.plist */,
@@ -358,8 +355,7 @@
 				C945B549190639E000F088E4 /* Main_iPad.storyboard in Resources */,
 				C945B62119066C5700F088E4 /* welsenc_ios.cfg in Resources */,
 				C945B54E190639E000F088E4 /* Images.xcassets in Resources */,
-				C945B62619066C7700F088E4 /* CiscoVT2people_320x192_12fps.yuv in Resources */,
-				C945B64C1907CE5500F088E4 /* CiscoVT2people_160x96_6fps.yuv in Resources */,
+				C9B8E37E190FA8ED0035243C /* Logi7500_320x192.yuv in Resources */,
 				C945B546190639E000F088E4 /* Main_iPhone.storyboard in Resources */,
 				C945B53D190639E000F088E4 /* InfoPlist.strings in Resources */,
 			);

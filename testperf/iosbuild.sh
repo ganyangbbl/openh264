@@ -230,7 +230,7 @@ OPENH264_PERFTEST_IOS_DEC_APP_FOR_DEVICE=${OPENH264_PERFTEST_IOS_DEC_APP_PATH}/$
 OPENH264_PERFTEST_IOS_TOOL_LAUNCH_ON_SIMULATOR="ios-sim"
 OPENH264_PERFTEST_IOS_TOOL_INSTALL_ON_DEVICE="./fruitstrap"
 
-OPENH264_PERFTEST_SEQUENCE_PATH=${BASE_PATH}/../res
+OPENH264_PERFTEST_SEQUENCE_PATH="${BASE_PATH}/../../TestVideo"
 
 cd ${BASE_PATH}
 
@@ -275,6 +275,7 @@ elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ]; then
 		exit 1
 	else
 		echo "Find app ${OPENH264_PERFTEST_IOS_ENC_APP_FOR_DEVICE}"
+		echo "cp ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_IOS_APP_FOR_SIMULATOR}"
 		cp ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_IOS_ENC_APP_FOR_DEVICE}
 	fi
 else
@@ -308,7 +309,7 @@ elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ] ; then
 
 	PERF_TEST_ENC_APP_ID="cisco.encPerfTestApp"
 	PERF_TEST_ENC_PATH="enc_result"
-	EXTRACTRESULT_FILE_NAME="ExtractTestResult.py"
+	ENC_RESULT_SCRIPT_NAME="ExtractEncTestResult.py"
 	ENC_LOG_FILE_NAME="EncPerfTest.log"
 	ENC_RESULT_FILE_NAME="EncPerformance.csv"
 	MountAppDocuments ${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} ${PERF_TEST_ENC_APP_ID} ${PERF_TEST_ENC_PATH} ${ENC_LOG_FILE_NAME}
@@ -321,12 +322,12 @@ elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ] ; then
 	
 	PERF_TEST_DEC_APP_ID="cisco.decPerfTestApp"
 	PERF_TEST_DEC_PATH="dec_result"
-	EXTRACTRESULT_FILE_NAME="ExtractTestResult.py"
+	DEC_RESULT_SCRIPT_NAME="ExtractDecTestResult.py"
 	DEC_LOG_FILE_NAME="DecPerfTest.log"
 	DEC_RESULT_FILE_NAME="DecPerformance.csv"
 	MountAppDocuments ${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} ${PERF_TEST_DEC_APP_ID} ${PERF_TEST_DEC_PATH} ${DEC_LOG_FILE_NAME}
 
-	echo "Start extract result from log"
+	echo "Start extract result from encoder log"
 	if [ -f ${ENC_RESULT_FILE_NAME} ] ; then
 		rm ${ENC_RESULT_FILE_NAME}
 	fi
@@ -334,17 +335,34 @@ elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ] ; then
 		rm ${ENC_LOG_FILE_NAME}
 	fi
 	cp ${PERF_TEST_ENC_PATH}/${ENC_LOG_FILE_NAME} ${BASE_PATH}
-	cp ${PERF_TEST_ENC_PATH}/*.264 ${BASE_PATH}
-	python ${EXTRACTRESULT_FILE_NAME} ${ENC_LOG_FILE_NAME} ${ENC_RESULT_FILE_NAME}
+
+	python ${ENC_RESULT_SCRIPT_NAME} ${ENC_LOG_FILE_NAME} ${ENC_RESULT_FILE_NAME}
 	if [ ! -f ${ENC_RESULT_FILE_NAME} ] ; then
 		echo "Extract result failed"
 		umount ${PERF_TEST_ENC_PATH}
+		umount ${PERF_TEST_DEC_PATH}
+		exit 1
+	fi
+	
+	echo "Start extract result from decodeer log"
+	if [ -f ${DEC_RESULT_FILE_NAME} ] ; then
+		rm ${DEC_RESULT_FILE_NAME}
+	fi
+	if [ -f ${DEC_LOG_FILE_NAME} ] ; then
+		rm ${DEC_LOG_FILE_NAME}
+	fi
+	cp ${PERF_TEST_DEC_PATH}/${DEC_LOG_FILE_NAME} ${BASE_PATH}
+
+	python ${DEC_RESULT_SCRIPT_NAME} ${DEC_LOG_FILE_NAME} ${DEC_RESULT_FILE_NAME}
+	if [ ! -f ${DEC_RESULT_FILE_NAME} ] ; then
+		echo "Extract result failed"
+		umount ${PERF_TEST_ENC_PATH}
+		umount ${PERF_TEST_DEC_PATH}
 		exit 1
 	fi
 
 	rm -r *.trace
-
-	cat ${ENC_RESULT_FILE_NAME}
+	rm ${PERF_TEST_DEC_PATH}/*.yuv
 
 	umount ${PERF_TEST_ENC_PATH}
 	umount ${PERF_TEST_DEC_PATH}
