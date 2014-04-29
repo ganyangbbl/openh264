@@ -2,20 +2,19 @@ import os
 import re
 import sys
 
-class ExtractTestResult:
+class ExtractDecTestResult:
     def __init__(self):
         self.fin_logfile = ""
         self.fout_resultfile = ""
 
         self.pattern_testfile = "Test file:"
-        self.pattern_cfgfile = "cfg file:"
         self.pattern_width = "Width:"
         self.pattern_height = "Height:"
         self.pattern_frames = "Frames:"
         self.pattern_FPS = "FPS:"
         self.pattern_CpuUsage = "CPU Usage:"
 
-        self.test_info = ["","","","","",""]\
+        self.test_info = ["","",""]\
 
     def OpenFile(self, LogFilename, ResultFilename):
         if os.path.exists(LogFilename):
@@ -44,14 +43,14 @@ class ExtractTestResult:
                 break
 
     def ParseTestCase(self,line):
-        pattern_endcase = "#+Encoder Test (\d+) Start#+"
+        pattern_endcase = "#+Decoder Test (\d+) Start#+"
         if re.search(pattern_endcase,line):
             return 1
         else:
             return 0
 
     def ParseTestResult(self):
-        pattern_endcase = "#+Encoder Test (\d+) Completed#+"
+        pattern_endcase = "#+Decoder Test (\d+) Completed#+"
         while True:
             line = self.fin_logfile.readline()
             if line:
@@ -60,21 +59,12 @@ class ExtractTestResult:
                 if re.search(self.pattern_testfile,line):
                     info = line.partition(self.pattern_testfile)
                     self.test_info[0] = info[2].split()[0]
-                if re.search(self.pattern_width,line):
-                    info = line.partition(self.pattern_width)
-                    self.test_info[1] = info[2].split()[0]
-                if re.search(self.pattern_height,line):
-                    info = line.partition(self.pattern_height)
-                    self.test_info[2] = info[2].split()[0]
-                if re.search(self.pattern_frames,line):
-                    info = line.partition(self.pattern_frames)
-                    self.test_info[3] = info[2].split()[0]
                 if re.search(self.pattern_FPS,line):
                     info = line.partition(self.pattern_FPS)
-                    self.test_info[4] = info[2].split()[0]
+                    self.test_info[1] = info[2].split()[0]
                 if re.search(self.pattern_CpuUsage,line):
                     info = line.partition(self.pattern_CpuUsage)
-                    self.test_info[5] = info[2].split()[0]
+                    self.test_info[2] = info[2].split()[0]
             else:
                 break
 
@@ -85,13 +75,13 @@ class ExtractTestResult:
         
 def main():
     if len(sys.argv)<3:
-        LogFilename = "PerfTest.log";
-        ResultFilename = "Performance.csv"
+        LogFilename = "DecPerfTest.log";
+        ResultFilename = "DecPerformance.csv"
     else:
         LogFilename = sys.argv[1]
         ResultFilename = sys.argv[2]
 
-    extractor = ExtractTestResult()
+    extractor = ExtractDecTestResult()
     if extractor.OpenFile(LogFilename, ResultFilename):
         sys.exit(1)
     print "Load log file: %s"%(LogFilename)
