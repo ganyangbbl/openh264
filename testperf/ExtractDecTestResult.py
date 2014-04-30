@@ -72,7 +72,11 @@ class ExtractDecTestResult:
         self.CalculateCpuUsage(cpu_usage_array)
 
     def CalculateCpuUsage(self,cpu_usage_array):
-        cpu_usage_array.remove(min(cpu_usage_array))
+        if len(cpu_usage_array)==0:
+            self.test_info[2] = "0"
+            return
+        if len(cpu_usage_array)>1:
+            cpu_usage_array.remove(min(cpu_usage_array))
         self.test_info[2] = sum(cpu_usage_array)/len(cpu_usage_array)
 
     def WriteResult(self):
