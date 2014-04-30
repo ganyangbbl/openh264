@@ -21,7 +21,8 @@ extern int DecMain(int argc, char **argv);
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
-    statusText.text = @"Test ready!";
+    statusText.text = @"Decoder Test Ready!";
+    [testButton setTitle:@"Start Test" forState:UIControlStateNormal];
 }
 
 
@@ -94,7 +95,8 @@ extern int DecMain(int argc, char **argv);
     NSArray * lines = [self getCommandSet:bundle];
     [self DoDecTest:bundle commandLineSet:lines];
     
-    statusText.text = @"Test Completed!";
+    statusText.text = @"Decoder Test Completed!";
+    [testButton setTitle:@"Restart Test" forState:UIControlStateNormal];
 }
 
 @end

@@ -137,9 +137,9 @@ if [ ! -d $3 ] ; then
 	while [ ! -f "$3/$4" ] 
 	do
 		sleep 10
-		echo "wait for mounting and testing $3/$4"
+		echo "wait for mounting and testing $2"
 	done
-	echo "mount $2 successfully"
+	echo "Test in $2 successfully"
 
 	ls $3
 }
@@ -329,7 +329,6 @@ elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ] ; then
 	END_FLAG_FILE_NAME="dec_progress.log"
 	
 	echo "Install and launch decoder performance test app"
-	rm ${PERF_TEST_DEC_PATH}/*.yuv ${PERF_TEST_DEC_PATH}/${END_FLAG_FILE_NAME}
 	InstallAndLaunchApp ${OPENH264_PERFTEST_IOS_TOOL_INSTALL_ON_DEVICE} ${OPENH264_PERFTEST_IOS_DEC_APP_FOR_DEVICE} ${OPENH264_PERFTEST_IOS_STD_OUT_ERR}
 	
 	MountAppDocuments ${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} ${PERF_TEST_DEC_APP_ID} ${PERF_TEST_DEC_PATH} ${END_FLAG_FILE_NAME}
@@ -351,7 +350,7 @@ elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ] ; then
 		exit 1
 	fi
 	
-	echo "Start extract result from decodeer log"
+	echo "Start extract result from decoder log"
 	if [ -f ${DEC_RESULT_FILE_NAME} ] ; then
 		rm ${DEC_RESULT_FILE_NAME}
 	fi

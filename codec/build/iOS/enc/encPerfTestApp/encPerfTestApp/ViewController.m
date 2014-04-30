@@ -22,7 +22,8 @@ extern int EncMain(int argc, char **argv);
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
-    statusText.text = @"Test Ready!";
+    statusText.text = @"Encoder Test Ready!";
+    [testButton setTitle:@"Start Test" forState:UIControlStateNormal];
 }
 
 - (NSString*) getPathForWrite {
@@ -66,7 +67,6 @@ extern int EncMain(int argc, char **argv);
         EncMain((int)[encArgv count], (char**)&argv[0]);
         [self GetCPUInfo];
         NSLog(@"######Encoder Test %d Completed########\n",i+1);
-        
     }
     [self OutputProgress];
 }
@@ -83,7 +83,6 @@ extern int EncMain(int argc, char **argv);
     NSMutableData * writer = [[NSMutableData alloc] init];
     [writer appendData:[data dataUsingEncoding:NSUTF8StringEncoding]];
     [writer writeToFile:path atomically:YES];
-    //[writer release]
 }
 
 - (void)didReceiveMemoryWarning
@@ -98,7 +97,8 @@ extern int EncMain(int argc, char **argv);
     NSArray * lines = [self getCommandSet:bundle];
     [self DoEncTest:bundle commandLineSet:lines];
     
-    statusText.text = @"Test Completed!";
+    statusText.text = @"Encoder Test Completed!";
+    [testButton setTitle:@"Restart Test" forState:UIControlStateNormal];
 }
 
 @end

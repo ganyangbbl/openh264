@@ -24,7 +24,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aSn-0q-FKv">
-                                <rect key="frame" x="87" y="229" width="46" height="30"/>
+                                <rect key="frame" x="87" y="229" width="182" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -38,6 +38,7 @@
                     </view>
                     <connections>
                         <outlet property="statusText" destination="4B2-t6-Hg7" id="ffl-8y-NkD"/>
+                        <outlet property="testButton" destination="aSn-0q-FKv" id="tvf-gF-HUK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>

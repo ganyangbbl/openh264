@@ -26,7 +26,6 @@
 		C945B62D19066CF600F088E4 /* read_config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C945B62B19066CF600F088E4 /* read_config.cpp */; };
 		C945B62E19066CF600F088E4 /* welsenc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C945B62C19066CF600F088E4 /* welsenc.cpp */; };
 		C9B8E348190E5C930035243C /* enc_caselist.cfg in Resources */ = {isa = PBXBuildFile; fileRef = C9B8E347190E5C930035243C /* enc_caselist.cfg */; };
-		C9B8E37E190FA8ED0035243C /* Logi7500_320x192.yuv in Resources */ = {isa = PBXBuildFile; fileRef = C9B8E37D190FA8ED0035243C /* Logi7500_320x192.yuv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,7 +101,6 @@
 		C945B62B19066CF600F088E4 /* read_config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = read_config.cpp; path = ../../../../../console/enc/src/read_config.cpp; sourceTree = "<group>"; };
 		C945B62C19066CF600F088E4 /* welsenc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = welsenc.cpp; path = ../../../../../console/enc/src/welsenc.cpp; sourceTree = "<group>"; };
 		C9B8E347190E5C930035243C /* enc_caselist.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = enc_caselist.cfg; path = ../../../../../../testperf/enc_caselist.cfg; sourceTree = "<group>"; };
-		C9B8E37D190FA8ED0035243C /* Logi7500_320x192.yuv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Logi7500_320x192.yuv; path = ../../../../../../../TestVideo/Logi7500_320x192.yuv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,7 +172,6 @@
 		C945B539190639E000F088E4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				C9B8E37D190FA8ED0035243C /* Logi7500_320x192.yuv */,
 				C9B8E347190E5C930035243C /* enc_caselist.cfg */,
 				C945B61E19066C5700F088E4 /* layer2.cfg */,
 				C945B61F19066C5700F088E4 /* welsenc_ios.cfg */,
@@ -355,7 +352,6 @@
 				C945B549190639E000F088E4 /* Main_iPad.storyboard in Resources */,
 				C945B62119066C5700F088E4 /* welsenc_ios.cfg in Resources */,
 				C945B54E190639E000F088E4 /* Images.xcassets in Resources */,
-				C9B8E37E190FA8ED0035243C /* Logi7500_320x192.yuv in Resources */,
 				C945B546190639E000F088E4 /* Main_iPhone.storyboard in Resources */,
 				C945B53D190639E000F088E4 /* InfoPlist.strings in Resources */,
 			);
