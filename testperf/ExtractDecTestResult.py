@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import string
 
 class ExtractDecTestResult:
     def __init__(self):
@@ -51,6 +52,7 @@ class ExtractDecTestResult:
 
     def ParseTestResult(self):
         pattern_endcase = "#+Decoder Test (\d+) Completed#+"
+        cpu_usage_array = []
         while True:
             line = self.fin_logfile.readline()
             if line:
@@ -64,9 +66,14 @@ class ExtractDecTestResult:
                     self.test_info[1] = info[2].split()[0]
                 if re.search(self.pattern_CpuUsage,line):
                     info = line.partition(self.pattern_CpuUsage)
-                    self.test_info[2] = info[2].split()[0]
+                    cpu_usage_array.append(string.atof(info[2].split()[0]))
             else:
                 break
+        self.CalculateCpuUsage(cpu_usage_array)
+
+    def CalculateCpuUsage(self,cpu_usage_array):
+        cpu_usage_array.remove(min(cpu_usage_array))
+        self.test_info[2] = sum(cpu_usage_array)/len(cpu_usage_array)
 
     def WriteResult(self):
         for i in range(0,len(self.test_info)):
