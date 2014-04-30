@@ -11,6 +11,7 @@
 @interface ViewController : UIViewController {
     __weak IBOutlet UILabel *statusText;
     __weak IBOutlet UIButton *testButton;
+    NSTimer * cpuTimer;
 }
 
 -(IBAction) StartTestButtonPressed:(id)sender;

@@ -77,6 +77,20 @@ if [ ! -f ${CASELIST_DEC_FILE_NAME} ] ; then
 	exit 1
 fi
 
+###############################################################################
+#Update code
+
+echo "###################################################################"
+echo "##Update code"
+if ! which git ; then
+	echo "git is not found, please install it"
+	exit 1
+else
+	echo "Find git tool"
+fi
+
+git checkout ios-test
+git pull upstream master
 
 ###############################################################################
 echo "###################################################################"

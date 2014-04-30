@@ -26,6 +26,16 @@ extern int EncMain(int argc, char **argv);
     [testButton setTitle:@"Start Test" forState:UIControlStateNormal];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [cpuTimer setFireDate:[NSDate distantPast]];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [cpuTimer setFireDate:[NSDate distantFuture]];
+}
+
 - (NSString*) getPathForWrite {
     NSArray * pathes =  NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString * documentDirectory = [pathes objectAtIndex:0];
@@ -44,7 +54,17 @@ extern int EncMain(int argc, char **argv);
     
 }
 
-- (void) DoEncTest:(NSBundle *)bundle commandLineSet:(NSArray *)lines {
+- (void) EncTestThreadProc
+{
+    NSBundle * bundle = [NSBundle mainBundle];
+    NSArray * lines = [self getCommandSet:bundle];
+    if (YES == [self DoEncTest:bundle commandLineSet:lines]) {
+        statusText.text = @"Encoder Test Completed!";
+        [testButton setTitle:@"Restart Test" forState:UIControlStateNormal];
+    };
+}
+
+- (BOOL) DoEncTest:(NSBundle *)bundle commandLineSet:(NSArray *)lines {
     const char * argv[32];
     for (int i=0; i < [lines count] - 1; i++)
     {
@@ -63,18 +83,30 @@ extern int EncMain(int argc, char **argv);
             }
         }
         NSLog(@"######Encoder Test %d Start########\nTest file: %@\ncfg file: %@\nbs file: %@\n", i+1, [encArgv objectAtIndex:3], [encArgv objectAtIndex:1], [encArgv objectAtIndex:5]);
+        [self StartCPUTimer];
 
         EncMain((int)[encArgv count], (char**)&argv[0]);
-        [self GetCPUInfo];
+        
+        [self StopCPUTimer];
         NSLog(@"######Encoder Test %d Completed########\n",i+1);
     }
     [self OutputProgress];
+    
+    return YES;
 }
 
 - (void) GetCPUInfo {
     UIDevice * device = [UIDevice currentDevice];
     NSString * cpuUsage = [device cpuUsage];
     NSLog(@"\nCPU Usage: %@\n",cpuUsage);
+}
+
+- (void) StartCPUTimer {
+    [cpuTimer setFireDate:[NSDate distantPast]];
+}
+
+- (void) StopCPUTimer {
+    [cpuTimer setFireDate:[NSDate distantFuture]];
 }
 
 - (void) OutputProgress {
@@ -93,12 +125,11 @@ extern int EncMain(int argc, char **argv);
 
 - (IBAction) StartTestButtonPressed:(id)sender
 {
-    NSBundle * bundle = [NSBundle mainBundle];
-    NSArray * lines = [self getCommandSet:bundle];
-    [self DoEncTest:bundle commandLineSet:lines];
+    [NSThread detachNewThreadSelector:@selector(EncTestThreadProc) toTarget:self withObject:nil];
+    //[self performSelectorOnMainThread:@selector(DetectCPU) withObject:nil waitUntilDone:NO];
+    cpuTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(GetCPUInfo) userInfo:nil repeats:YES];
     
-    statusText.text = @"Encoder Test Completed!";
-    [testButton setTitle:@"Restart Test" forState:UIControlStateNormal];
+    statusText.text = @"Encoder Test in Process ...!";
 }
 
 @end

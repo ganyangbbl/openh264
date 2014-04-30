@@ -25,6 +25,15 @@ extern int DecMain(int argc, char **argv);
     [testButton setTitle:@"Start Test" forState:UIControlStateNormal];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [cpuTimer setFireDate:[NSDate distantPast]];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [cpuTimer setFireDate:[NSDate distantFuture]];
+}
 
 - (NSString*) getPathForWrite {
     NSArray * pathes =  NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -44,7 +53,17 @@ extern int DecMain(int argc, char **argv);
     
 }
 
-- (void) DoDecTest:(NSBundle *)bundle commandLineSet:(NSArray *)lines {
+- (void) DecTestThreadProc
+{
+    NSBundle * bundle = [NSBundle mainBundle];
+    NSArray * lines = [self getCommandSet:bundle];
+    if (YES == [self DoDecTest:bundle commandLineSet:lines]) {
+        statusText.text = @"Decoder Test Completed!";
+        [testButton setTitle:@"Restart Test" forState:UIControlStateNormal];
+    };
+}
+
+- (BOOL) DoDecTest:(NSBundle *)bundle commandLineSet:(NSArray *)lines {
     char * argv[32];
     for (int i=0; i < [lines count] - 1; i++)
     {
@@ -60,18 +79,30 @@ extern int DecMain(int argc, char **argv);
             }
         }
         NSLog(@"######Decoder Test %d Start########\nTest file: %@\nYUV file: %@\n", i+1, [decArgv objectAtIndex:1], [decArgv objectAtIndex:2]);
+        [self StartCPUTimer];
         
         DecMain((int)[decArgv count], argv);
-        [self GetCPUInfo];
+        
+        [self StopCPUTimer];
         NSLog(@"######Decoder Test %d Completed########\n",i+1);
     }
     [self OutputProgress];
+    
+    return YES;
 }
 
 - (void) GetCPUInfo {
     UIDevice * device = [UIDevice currentDevice];
     NSString * cpuUsage = [device cpuUsage];
     NSLog(@"\nCPU Usage: %@\n",cpuUsage);
+}
+
+- (void) StartCPUTimer {
+    [cpuTimer setFireDate:[NSDate distantPast]];
+}
+
+- (void) StopCPUTimer {
+    [cpuTimer setFireDate:[NSDate distantFuture]];
 }
 
 - (void) OutputProgress {
@@ -91,12 +122,11 @@ extern int DecMain(int argc, char **argv);
 
 - (IBAction) StartTestButtonPressed:(id)sender
 {
-    NSBundle * bundle = [NSBundle mainBundle];
-    NSArray * lines = [self getCommandSet:bundle];
-    [self DoDecTest:bundle commandLineSet:lines];
+    [NSThread detachNewThreadSelector:@selector(DecTestThreadProc) toTarget:self withObject:nil];
+    //[self performSelectorOnMainThread:@selector(DetectCPU) withObject:nil waitUntilDone:NO];
+    cpuTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(GetCPUInfo) userInfo:nil repeats:YES];
     
-    statusText.text = @"Decoder Test Completed!";
-    [testButton setTitle:@"Restart Test" forState:UIControlStateNormal];
+    statusText.text = @"Decoder Test in Process ...!";
 }
 
 @end
