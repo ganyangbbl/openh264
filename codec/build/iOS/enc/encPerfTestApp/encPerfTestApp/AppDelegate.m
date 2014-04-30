@@ -16,6 +16,7 @@
     UIDevice *device = [UIDevice currentDevice];
     if (![[device model]isEqualToString:@"iPad Simulator"] && ![[device model]isEqualToString:@"iPhone Simulator"])
         [self redirectLogToDocumentFolder];
+    [self cleanFile];
     return YES;
 }
 							
@@ -55,9 +56,23 @@
     NSString * logFilePath = [documentDirectory stringByAppendingPathComponent:fileName];
     
     NSFileManager * defaultManager = [NSFileManager defaultManager];
-    [defaultManager removeItemAtPath:logFilePath error:nil];
+    if ([defaultManager fileExistsAtPath:logFilePath]) {
+        [defaultManager removeItemAtPath:logFilePath error:nil];
+    }
     
     freopen([logFilePath cStringUsingEncoding:NSASCIIStringEncoding], "a+", stdout);
     freopen([logFilePath cStringUsingEncoding:NSASCIIStringEncoding], "a+", stderr);
+}
+
+- (void)cleanFile
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString * documentDirectory = [paths objectAtIndex:0];
+    NSString * endFileName = [NSString stringWithFormat:@"enc_progress.log"];
+    NSString * endFilePath = [documentDirectory stringByAppendingPathComponent:endFileName];
+    if ([fileManager fileExistsAtPath:endFilePath]) {
+        [fileManager removeItemAtPath:endFilePath error:nil];
+    }
 }
 @end
