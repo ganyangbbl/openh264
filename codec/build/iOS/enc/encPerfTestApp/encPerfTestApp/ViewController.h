@@ -12,4 +12,6 @@
     __weak IBOutlet UILabel *statusText;
 }
 
+-(IBAction) StartTestButtonPressed:(id)sender;
+
 @end

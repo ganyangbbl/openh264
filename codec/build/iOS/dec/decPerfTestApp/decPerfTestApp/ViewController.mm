@@ -20,12 +20,8 @@ extern int DecMain(int argc, char **argv);
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    NSBundle * bundle = [NSBundle mainBundle];
-    NSArray * lines = [self getCommandSet:bundle];
-    [self DoDecTest:bundle commandLineSet:lines];
     
-    
-    statusText.text = @"Test completed!";
+    statusText.text = @"Test ready!";
 }
 
 
@@ -68,6 +64,7 @@ extern int DecMain(int argc, char **argv);
         [self GetCPUInfo];
         NSLog(@"######Decoder Test %d Completed########\n",i+1);
     }
+    [self OutputProgress];
 }
 
 - (void) GetCPUInfo {
@@ -76,10 +73,28 @@ extern int DecMain(int argc, char **argv);
     NSLog(@"\nCPU Usage: %@\n",cpuUsage);
 }
 
+- (void) OutputProgress {
+    NSString * path = [NSString stringWithFormat:@"%@/dec_progress.log", [self getPathForWrite]];
+    NSString * data = [NSString stringWithFormat:@"flag"];
+    NSMutableData * writer = [[NSMutableData alloc] init];
+    [writer appendData:[data dataUsingEncoding:NSUTF8StringEncoding]];
+    [writer writeToFile:path atomically:YES];
+    //[writer release]
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (IBAction) StartTestButtonPressed:(id)sender
+{
+    NSBundle * bundle = [NSBundle mainBundle];
+    NSArray * lines = [self getCommandSet:bundle];
+    [self DoDecTest:bundle commandLineSet:lines];
+    
+    statusText.text = @"Test Completed!";
 }
 
 @end

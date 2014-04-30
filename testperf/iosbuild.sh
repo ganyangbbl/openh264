@@ -117,6 +117,8 @@ function InstallAndLaunchApp()
 		echo "Try to run on device:${DEVICE_ID}"
 
 		$1 -b $2 -i ${DEVICE_ID} > $3 2>&1
+		
+		echo "launch..."
 
 		instruments -w ${DEVICE_ID}  -t /Applications/Xcode.app/Contents/Applications/Instruments.app/Contents/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate $2 -e UIASCRIPT /tmp/test.js -e UIARRESULTPATH /tmp/ > $3 2>&1
 
@@ -134,8 +136,8 @@ if [ ! -d $3 ] ; then
 	
 	while [ ! -f "$3/$4" ] 
 	do
-		sleep 5
-		echo "wait for mounting and testing"
+		sleep 10
+		echo "wait for mounting and testing $3/$4"
 	done
 	echo "mount $2 successfully"
 
@@ -249,7 +251,7 @@ if [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphonesimulator ]; then
 		exit 1
 	else
 		echo "Find App ${OPENH264_PERFTEST_IOS_APP_FOR_SIMULATOR}"
-		echo "cp ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_IOS_APP_FOR_SIMULATOR}"
+		echo "copy ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_IOS_APP_FOR_SIMULATOR}"
 		cp ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_IOS_ENC_APP_FOR_SIMULATOR}
 	fi
 
@@ -275,7 +277,7 @@ elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ]; then
 		exit 1
 	else
 		echo "Find app ${OPENH264_PERFTEST_IOS_ENC_APP_FOR_DEVICE}"
-		echo "cp ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_IOS_APP_FOR_SIMULATOR}"
+		echo "copy ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_IOS_APP_FOR_SIMULATOR}"
 		cp ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_IOS_ENC_APP_FOR_DEVICE}
 	fi
 else
@@ -295,6 +297,13 @@ if [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphonesimulator ] ; then
 	exit 1
 
 elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ] ; then
+	PERF_TEST_ENC_APP_ID="cisco.encPerfTestApp"
+	PERF_TEST_ENC_PATH="enc_result"
+	ENC_RESULT_SCRIPT_NAME="ExtractEncTestResult.py"
+	ENC_LOG_FILE_NAME="EncPerfTest.log"
+	ENC_RESULT_FILE_NAME="EncPerformance.csv"
+	END_FLAG_FILE_NAME="enc_progress.log"
+	
 	echo "Install and launch encoder performance test app"
 	InstallAndLaunchApp ${OPENH264_PERFTEST_IOS_TOOL_INSTALL_ON_DEVICE} ${OPENH264_PERFTEST_IOS_ENC_APP_FOR_DEVICE} ${OPENH264_PERFTEST_IOS_STD_OUT_ERR}
 
@@ -307,25 +316,23 @@ elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ] ; then
 		echo "Find ${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE}"
 	fi
 
-	PERF_TEST_ENC_APP_ID="cisco.encPerfTestApp"
-	PERF_TEST_ENC_PATH="enc_result"
-	ENC_RESULT_SCRIPT_NAME="ExtractEncTestResult.py"
-	ENC_LOG_FILE_NAME="EncPerfTest.log"
-	ENC_RESULT_FILE_NAME="EncPerformance.csv"
-	MountAppDocuments ${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} ${PERF_TEST_ENC_APP_ID} ${PERF_TEST_ENC_PATH} ${ENC_LOG_FILE_NAME}
+	MountAppDocuments ${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} ${PERF_TEST_ENC_APP_ID} ${PERF_TEST_ENC_PATH} ${END_FLAG_FILE_NAME}
 	
 	echo "copy 264 bs files to decoder performance test workspace"
 	cp ${PERF_TEST_ENC_PATH}/*.264 ${OPENH264_PERFTEST_IOS_DEC_APP_FOR_DEVICE}
-	
-	echo "Install and launch decoder performance test app"
-	InstallAndLaunchApp ${OPENH264_PERFTEST_IOS_TOOL_INSTALL_ON_DEVICE} ${OPENH264_PERFTEST_IOS_DEC_APP_FOR_DEVICE} ${OPENH264_PERFTEST_IOS_STD_OUT_ERR}
 	
 	PERF_TEST_DEC_APP_ID="cisco.decPerfTestApp"
 	PERF_TEST_DEC_PATH="dec_result"
 	DEC_RESULT_SCRIPT_NAME="ExtractDecTestResult.py"
 	DEC_LOG_FILE_NAME="DecPerfTest.log"
 	DEC_RESULT_FILE_NAME="DecPerformance.csv"
-	MountAppDocuments ${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} ${PERF_TEST_DEC_APP_ID} ${PERF_TEST_DEC_PATH} ${DEC_LOG_FILE_NAME}
+	END_FLAG_FILE_NAME="dec_progress.log"
+	
+	echo "Install and launch decoder performance test app"
+	rm ${PERF_TEST_DEC_PATH}/*.yuv ${PERF_TEST_DEC_PATH}/${END_FLAG_FILE_NAME}
+	InstallAndLaunchApp ${OPENH264_PERFTEST_IOS_TOOL_INSTALL_ON_DEVICE} ${OPENH264_PERFTEST_IOS_DEC_APP_FOR_DEVICE} ${OPENH264_PERFTEST_IOS_STD_OUT_ERR}
+	
+	MountAppDocuments ${OPENH264_PERFTEST_IOS_TOOL_MOUNT_DEVICE} ${PERF_TEST_DEC_APP_ID} ${PERF_TEST_DEC_PATH} ${END_FLAG_FILE_NAME}
 
 	echo "Start extract result from encoder log"
 	if [ -f ${ENC_RESULT_FILE_NAME} ] ; then
@@ -362,7 +369,9 @@ elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ] ; then
 	fi
 
 	rm -r *.trace
-	rm ${PERF_TEST_DEC_PATH}/*.yuv
+	rm ${PERF_TEST_ENC_PATH}/*.264 ${PERF_TEST_ENC_PATH}/*.log
+	rm ${PERF_TEST_DEC_PATH}/*.yuv ${PERF_TEST_DEC_PATH}/*.log
+	
 
 	umount ${PERF_TEST_ENC_PATH}
 	umount ${PERF_TEST_DEC_PATH}

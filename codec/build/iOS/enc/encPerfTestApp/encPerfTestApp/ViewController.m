@@ -21,12 +21,8 @@ extern int EncMain(int argc, char **argv);
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    NSBundle * bundle = [NSBundle mainBundle];
-    NSArray * lines = [self getCommandSet:bundle];
-    [self DoEncTest:bundle commandLineSet:lines];
     
-    
-    statusText.text = @"Test completed!";
+    statusText.text = @"Test Ready!";
 }
 
 - (NSString*) getPathForWrite {
@@ -70,7 +66,9 @@ extern int EncMain(int argc, char **argv);
         EncMain((int)[encArgv count], (char**)&argv[0]);
         [self GetCPUInfo];
         NSLog(@"######Encoder Test %d Completed########\n",i+1);
+        
     }
+    [self OutputProgress];
 }
 
 - (void) GetCPUInfo {
@@ -79,10 +77,28 @@ extern int EncMain(int argc, char **argv);
     NSLog(@"\nCPU Usage: %@\n",cpuUsage);
 }
 
+- (void) OutputProgress {
+    NSString * path = [NSString stringWithFormat:@"%@/enc_progress.log", [self getPathForWrite]];
+    NSString * data = [NSString stringWithFormat:@"flag"];
+    NSMutableData * writer = [[NSMutableData alloc] init];
+    [writer appendData:[data dataUsingEncoding:NSUTF8StringEncoding]];
+    [writer writeToFile:path atomically:YES];
+    //[writer release]
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (IBAction) StartTestButtonPressed:(id)sender
+{
+    NSBundle * bundle = [NSBundle mainBundle];
+    NSArray * lines = [self getCommandSet:bundle];
+    [self DoEncTest:bundle commandLineSet:lines];
+    
+    statusText.text = @"Test Completed!";
 }
 
 @end
