@@ -16,7 +16,7 @@
     UIDevice *device = [UIDevice currentDevice];
     if (![[device model]isEqualToString:@"iPad Simulator"] && ![[device model]isEqualToString:@"iPhone Simulator"])
         [self redirectLogToDocumentFolder];
-    [self cleanFile]
+    [self cleanFile];
     return YES;
 }
 							
