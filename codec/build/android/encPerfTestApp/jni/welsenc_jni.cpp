@@ -9,22 +9,16 @@
 extern "C" int EncMain (int argc, char **argv);
 
 extern "C"
-JNIEXPORT void JNICALL Java_com_wels_encPerfTestApp_DoEncTest
-(JNIEnv *env, jobject thiz) {
+JNIEXPORT void JNICALL Java_com_wels_encPerfTestApp_EncTestThread_DoEncTest
+(JNIEnv *env, jobject thiz, jint argc, jobjectArray cmd) {
   char *argv[32];
   jstring str;
 
-
-//  for (int i=0; i<count; i++)
+  for (int i=0; i<argc; i++)
   {
-//    str = (jstring)((*env).GetObjectArrayElement(cmd, i));
-//    argv[i] = (char*) ((*env).GetStringUTFChars (str, NULL));
+    str = (jstring)((*env).GetObjectArrayElement(cmd, i));
+    argv[i] = (char*) ((*env).GetStringUTFChars (str, NULL));
   }
 
-//  for (int i=0; i<count; i++)
-  {
-  //  LOGI("%s,",argv[i]);
-  }
-
-  //EncMain (argc, argv);
+  EncMain (argc, argv);
 }
