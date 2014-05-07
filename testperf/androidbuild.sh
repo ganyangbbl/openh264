@@ -60,6 +60,8 @@ GENERATECASE_FILE_NAME="GenerateCase.py"
 CASE_FILE_NAME="case.cfg"
 CASELIST_ENC_FILE_NAME="enc_caselist.cfg"
 CASELIST_DEC_FILE_NAME="dec_caselist.cfg"
+PLATFORM="android"
+
 if [ -f ${CASELIST_ENC_FILE_NAME} ] ; then
 	rm ${CASELIST_ENC_FILE_NAME}
 fi
@@ -67,7 +69,7 @@ if [ -f ${CASELIST_DEC_FILE_NAME} ] ; then
 	rm ${CASELIST_DEC_FILE_NAME}
 fi
 
-python ${GENERATECASE_FILE_NAME} ${CASE_FILE_NAME} ${CASELIST_ENC_FILE_NAME} ${CASELIST_DEC_FILE_NAME}
+python ${GENERATECASE_FILE_NAME} ${PLATFORM} ${CASE_FILE_NAME} ${CASELIST_ENC_FILE_NAME} ${CASELIST_DEC_FILE_NAME}
 if [ ! -f ${CASELIST_ENC_FILE_NAME} ] ; then
 	echo "Generate encoder test case failed"
 	exit 1
@@ -125,21 +127,20 @@ function InstallAndLaunchApp()
 
 function MountAppDocuments()
 {
-if [ ! -d $3 ] ; then
-		mkdir $3
-	fi
-
-	echo "$1 --documents $2 $3"
-	$1 --documents $2 $3
+	adb shell
 	
-	while [ ! -f "$3/$4" ] 
+	cd $1
+	
+	while [ ! -f "$1/$2" ] 
 	do
 		sleep 10
-		echo "wait for mounting and testing $2"
+		echo "wait for testing $2"
 	done
 	echo "Test in $2 successfully"
 
-	ls $3
+	ls $1
+	
+	exit
 }
 
 ###############################################################################
@@ -162,7 +163,7 @@ if ! which ${ANDROID_PACKAGE_TOOL} ; then
 	echo "${ANDROID_PACKAGE_TOOL} is not installed, please install it"
 fi
 echo "build libraries ..."
-make OS=android NDKROOT=${ANDROID_NDK_HOME} TARGET=${ANDROID_TARGET} > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
+make clean && make OS=android NDKROOT=${ANDROID_NDK_HOME} TARGET=${ANDROID_TARGET} > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
 
 ###############################################################################
 cd ${OPENH264_PERFTEST_ANDROID_ENC_PROJECT_PATH}
@@ -177,8 +178,6 @@ DEC_PROJECT_NAME=decPerfTestApp
 
 echo "build ${DEC_PROJECT_NAME} and package"
 #buildProject ${DEC_PROJECT_NAME} ${ANDROID_TARGET} ${ANDROID_PACKAGE_TOOL}
-
-exit 0
 
 ###############################################################################
 #Detect and prepare test environment
@@ -208,7 +207,8 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ]; then
 		adb push ${OPENH264_PERFTEST_SEQUENCE_PATH}/$i ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
 	done
 	adb push ${BASE_PATH}/../testbin/welsenc_android.cfg ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
-	adb push ${BASE_PATH}/../testbin/layer.cfg ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
+	adb push ${BASE_PATH}/../testbin/layer2.cfg ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
+	adb push ${BASE_PATH}/${CASELIST_ENC_FILE_NAME}
 else
 	echo "parameters for platform is wrong : ${OPENH264_PERFTEST_ANDROID_PLATFORM}"
 fi
@@ -235,18 +235,9 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 	
 	echo "Install and launch encoder performance test app"
 	InstallAndLaunchApp ${OPENH264_PERFTEST_ANDROID_ENC_APP} ${PERF_TEST_ENC_APP_ID}
+
+	MountAppDocuments ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE} ${END_FLAG_FILE_NAME}
 	exit 0
-
-	echo "mount device"
-	OPENH264_PERFTEST_ANDROID_TOOL_MOUNT_DEVICE="ifuse"
-	if ! which ${OPENH264_PERFTEST_ANDROID_TOOL_MOUNT_DEVICE} ; then
-		echo "${OPENH264_PERFTEST_ANDROID_TOOL_MOUNT_DEVICE} is not found, please install ifuse"
-		exit 1
-	else
-		echo "Find ${OPENH264_PERFTEST_ANDROID_TOOL_MOUNT_DEVICE}"
-	fi
-
-	MountAppDocuments ${OPENH264_PERFTEST_ANDROID_TOOL_MOUNT_DEVICE} ${PERF_TEST_ENC_APP_ID} ${PERF_TEST_ENC_PATH} ${END_FLAG_FILE_NAME}
 	
 	echo "copy 264 bs files to decoder performance test workspace"
 	cp ${PERF_TEST_ENC_PATH}/*.264 ${OPENH264_PERFTEST_ANDROID_DEC_APP_FOR_DEVICE}

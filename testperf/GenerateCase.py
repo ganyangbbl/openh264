@@ -3,7 +3,7 @@ import re
 import sys
 
 class GenerateCase:
-    def __init__(self):
+    def __init__(self,platform):
         self.fin_casefile = ""
         self.fout_enclistfile = ""
         self.fout_declistfile = ""
@@ -18,7 +18,12 @@ class GenerateCase:
         self.pattern_360p = "360p"
         self.pattern_720p = "720p"
 
-        self.enccfgFilename = "welsenc_ios.cfg"
+        if platform == "ios":
+            self.enccfgFilename = "welsenc_ios.cfg"
+        elif platform == "android":
+            self.enccfgFilename = "welsenc_android.cfg"
+        else:
+            self.enccfgFilename = "welsenc.cfg"
         self.layercfgFilename = "layer2.cfg"
 
     def OpenFile(self, CaseFilename, ListFilename):
@@ -128,17 +133,21 @@ class GenerateCase:
         
 def main():
     ListFilename = ["",""]
-    if len(sys.argv)<3:
+    if len(sys.argv)<2:
+        print "please specfiy the platform: 'ios' or 'android'"
+        exit 1
+    elif len(sys.argv)<4:
+        Platform = "common"
         CaseFilename = "case.cfg";
         ListFilename[0] = "enc_caselist.cfg"
         ListFilename[1] = "dec_caselist.cfg"
     else:
-        CaseFilename = sys.argv[1]
-        ListFilename[0] = sys.argv[2]
-        if len(sys.argv)>3:
-            ListFilename[1] = sys.argv[3]
+        CaseFilename = sys.argv[2]
+        ListFilename[0] = sys.argv[3]
+        if len(sys.argv)>4:
+            ListFilename[1] = sys.argv[4]
 
-    generator = GenerateCase()
+    generator = GenerateCase(Platform)
     if generator.OpenFile(CaseFilename, ListFilename):
         sys.exit(1)
     print "Load case cfg: %s"%(CaseFilename)
