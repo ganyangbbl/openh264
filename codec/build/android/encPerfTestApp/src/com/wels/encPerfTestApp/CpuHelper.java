@@ -75,11 +75,13 @@ public class CpuHelper {
         }
 
 
-        float v = (float)(delta_user + delta_sys + delta_io) / (delta_user + delta_sys + delta_io + delta_idle);
+        long v = 0;
+        if (delta_idle + delta_io + delta_sys + delta_user != 0)
+            v = 100 * (delta_user + delta_sys + delta_io) / (delta_user + delta_sys + delta_io + delta_idle);
 
         //Log.i("cpu","calcUsage, v="+v+",delta_user="+delta_user+",delta_sys="+delta_sys+",delta_idle="+delta_idle);
         //Log.i("cpu","calcUsage, idle="+cpuInfos[5]+", idle="+cpu_snapshot[5]);
-        return (long) (v * 100);
+        return v;
     }
 
 

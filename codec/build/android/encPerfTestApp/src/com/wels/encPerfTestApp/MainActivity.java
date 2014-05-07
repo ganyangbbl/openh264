@@ -43,7 +43,6 @@ public class MainActivity extends Activity {
                 switch (view.getId()) {
                 case R.id.buttonstart:
                     EncTestThread test = new EncTestThread(uiHandler);
-                    cpu.EnableUsage(3);
                     StartTimer();
                     test.start();
                     mTvStatus.setText("Encoder Test In Process...");
@@ -66,6 +65,7 @@ public class MainActivity extends Activity {
         };
 
         cpu = new CpuHelper();
+        cpu.EnableUsage(3);
 
         mBtnStart.setOnClickListener(OnClickEvent);
 
