@@ -135,10 +135,10 @@ def main():
     ListFilename = ["",""]
     if len(sys.argv)<2:
         print "please specfiy the platform: 'ios' or 'android'"
-        exit 1
+        sys.exit(1)
     elif len(sys.argv)<4:
         Platform = "common"
-        CaseFilename = "case.cfg";
+        CaseFilename = "case.cfg"
         ListFilename[0] = "enc_caselist.cfg"
         ListFilename[1] = "dec_caselist.cfg"
     else:
