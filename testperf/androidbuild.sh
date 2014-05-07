@@ -18,32 +18,32 @@ fi
 # $1 sim or dev
 if [ -n "$1" ]; then
 	if [ "sim" == "$1" ]; then
-		OPENH264_PERFTEST_ANDROID_PLATFORM="iphonesimulator"
+		OPENH264_PERFTEST_ANDROID_PLATFORM="simulator"
 	elif [ "dev" == "$1" ]; then
-		OPENH264_PERFTEST_ANDROID_PLATFORM="iphoneos"
+		OPENH264_PERFTEST_ANDROID_PLATFORM="device"
 	else
 		echo "$1" is unvalid, try sim or dev for simulator or device
 		exit 2
 	fi
 else
-	echo "You not set parameter 1, use default:iphonesimulator"
-	OPENH264_PERFTEST_ANDROID_PLATFORM="iphonesimulator"
+	echo "You not set parameter 1, use default:simulator"
+	OPENH264_PERFTEST_ANDROID_PLATFORM="simulator"
 fi
 
 
 # $2 debug or release
 if [ -n "$2" ]; then
 	if [ "release" == "$2" ]; then
-		OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE="Release"
+		OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE="release"
 	elif [ "debug" == "$2" ]; then
-		OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE="Debug"
+		OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE="debug"
 	else
 		echo "$2" is unvalid, try debug or release
 		exit 2
 	fi
 else
 	echo "You not set parameter 2, use default:release"
-	OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE="Release"
+	OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE="release"
 fi
 
 echo "Performance Test will run on ${OPENH264_PERFTEST_ANDROID_PLATFORM} with ${OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE}"
@@ -99,41 +99,28 @@ echo "##Building libraries and test app"
 OPENH264_PERFTEST_ROOT_PATH=${BASE_PATH}/..
 OPENH264_PERFTEST_ANDROID_ENC_PROJECT_PATH=${BASE_PATH}/../codec/build/android/encPerfTestApp
 OPENH264_PERFTEST_ANDROID_DEC_PROJECT_PATH=${BASE_PATH}/../codec/build/android/decPerfTestApp
-OPENH264_PERFTEST_ANDROID_ENC_APP_PATH=${OPENH264_PERFTEST_ANDROID_ENC_PROJECT_PATH}
-OPENH264_PERFTEST_ANDROID_DEC_APP_PATH=${OPENH264_PERFTEST_ANDROID_DEC_PROJECT_PATH}
+OPENH264_PERFTEST_ANDROID_ENC_APP_PATH=${OPENH264_PERFTEST_ANDROID_ENC_PROJECT_PATH}/bin
+OPENH264_PERFTEST_ANDROID_DEC_APP_PATH=${OPENH264_PERFTEST_ANDROID_DEC_PROJECT_PATH}/bin
 OPENH264_PERFTEST_ANDROID_STD_OUT_ERR=/dev/null
 
 function buildProject()
 {
-	xcodebuild -project $1.xcodeproj -target $2 -configuration $3 -sdk $4 clean build > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
-	if [ $? == 0 ]; then
-		echo "build $1 $3 $4 successfully"
-		return 0;
-	else
-		echo "build $1 $3 $4 fail"
-		return 1;
-	fi
+	cd jni
+	echo "build welsencdemo lib"
+	ndk-build -B
+	
+	cd ..
+	echo "package the app"
+	android update project -n $1 -t $2 -p . > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
+	$3 debug > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
 }
 
 function InstallAndLaunchApp()
 {
-	echo "Begin to launching $TEST_NAME"
-
-	touch /tmp/test.js
-
-	GREP_RESULT=`system_profiler SPUSBDataType | sed -n -e '/iPad/,/Serial/p' -e '/iPhone/,/Serial/p' | grep "Serial Number:" | awk -F ": " '{print $2}'`
-
-	for DEVICE_ID in ${GREP_RESULT}
-	do
-		echo "Try to run on device:${DEVICE_ID}"
-
-		$1 -b $2 -i ${DEVICE_ID} > $3 2>&1
-		
-		echo "launch..."
-
-		instruments -w ${DEVICE_ID}  -t /Applications/Xcode.app/Contents/Applications/Instruments.app/Contents/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate $2 -e UIASCRIPT /tmp/test.js -e UIARRESULTPATH /tmp/ > $3 2>&1
-
-	done
+	echo "Install apk $1 on device"
+	adb install -r $1 > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
+	echo "Launching the app $2"
+	adb shell am start -n $2/.MainActivity > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
 }
 
 function MountAppDocuments()
@@ -161,92 +148,67 @@ if [ ! -d $3 ] ; then
 cd ${OPENH264_PERFTEST_ROOT_PATH}
 
 ANDROID_TARGET=android-19
+ANDROID_PACKAGE_TOOL=ant
 
 if [ ! ${ANDROID_NDK_HOME} ] ; then
 	echo "ANDROID_NDK_HOME is not set, please set the environment variable first"
 	exit 1
+fi
+if [ ! ${ANDROID_HOME} ] ; then
+	echo "ANDROID_HOME is not set, please set the environment variable first"
+	exit 1
+fi
+if ! which ${ANDROID_PACKAGE_TOOL} ; then
+	echo "${ANDROID_PACKAGE_TOOL} is not installed, please install it"
 fi
 echo "build libraries ..."
 make OS=android NDKROOT=${ANDROID_NDK_HOME} TARGET=${ANDROID_TARGET} > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
 
 ###############################################################################
 cd ${OPENH264_PERFTEST_ANDROID_ENC_PROJECT_PATH}
-cd jni
+ENC_PROJECT_NAME=encPerfTestApp
 
-echo "build welsencdemo lib"
-ndk-build -B
+echo "build ${ENC_PROJECT_NAME} and package"
+buildProject ${ENC_PROJECT_NAME} ${ANDROID_TARGET} ${ANDROID_PACKAGE_TOOL}
 
 ###############################################################################
-cd ${OPENH264_PERFTEST_ANDROID_ENC_PROJECT_PATH}
+#cd ${OPENH264_PERFTEST_ANDROID_DEC_PROJECT_PATH}
+DEC_PROJECT_NAME=decPerfTestApp
 
-echo "build encPerfTestApp and package"
-ant ${OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE}
+echo "build ${DEC_PROJECT_NAME} and package"
+#buildProject ${DEC_PROJECT_NAME} ${ANDROID_TARGET} ${ANDROID_PACKAGE_TOOL}
 
 exit 0
 
 ###############################################################################
-#Detect test environment
+#Detect and prepare test environment
 
 echo "###################################################################"
 echo "##Detect test environment"
 
 OPENH264_PERFTEST_ANDROID_CONSOLE="/tmp/wme_encTest.log"
-OPENH264_PERFTEST_ANDROID_ENC_APP_FOR_SIMULATOR=${OPENH264_PERFTEST_ANDROID_ENC_APP_PATH}/${OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE}-iphonesimulator/encPerfTestApp.app
-OPENH264_PERFTEST_ANDROID_ENC_APP_FOR_DEVICE=${OPENH264_PERFTEST_ANDROID_ENC_APP_PATH}/${OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE}-iphoneos/encPerfTestApp.app
-OPENH264_PERFTEST_ANDROID_DEC_APP_FOR_SIMULATOR=${OPENH264_PERFTEST_ANDROID_DEC_APP_PATH}/${OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE}-iphonesimulator/decPerfTestApp.app
-OPENH264_PERFTEST_ANDROID_DEC_APP_FOR_DEVICE=${OPENH264_PERFTEST_ANDROID_DEC_APP_PATH}/${OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE}-iphoneos/decPerfTestApp.app
-
-OPENH264_PERFTEST_ANDROID_TOOL_LAUNCH_ON_SIMULATOR="ios-sim"
-OPENH264_PERFTEST_ANDROID_TOOL_INSTALL_ON_DEVICE="./fruitstrap"
+OPENH264_PERFTEST_ANDROID_ENC_APP=${OPENH264_PERFTEST_ANDROID_ENC_APP_PATH}/${encPerfTestApp}-debug-unaligned.apk
+OPENH264_PERFTEST_ANDROID_DEC_APP=${OPENH264_PERFTEST_ANDROID_DEC_APP_PATH}/${DEC_PROJECT_NAME}-debug-unaligned.apk
 
 OPENH264_PERFTEST_SEQUENCE_PATH="${BASE_PATH}/../../TestVideo"
+OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE="/sdcard/encTest"
+OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE="/sdcard/decTest"
 
 cd ${BASE_PATH}
 
-if [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == iphonesimulator ]; then
-
-	echo "Checking tool and app"
-	if ! which ${OPENH264_PERFTEST_ANDROID_TOOL_LAUNCH_ON_SIMULATOR} ; then
-		echo "${OPENH264_PERFTEST_ANDROID_TOOL_LAUNCH_ON_SIMULATOR} is not found, please install it"
-		exit 1
-	else
-		echo "Find ${OPENH264_PERFTEST_ANDROID_TOOL_LAUNCH_ON_SIMULATOR} tool"
-	fi
-
-	if [ ! -d ${OPENH264_PERFTEST_ANDROID_APP_FOR_SIMULATOR} ] ; then
-		echo "${OPENH264_PERFTEST_ANDROID_APP_FOR_SIMULATOR} is not found"
-		exit 1
-	else
-		echo "Find App ${OPENH264_PERFTEST_ANDROID_APP_FOR_SIMULATOR}"
-		echo "copy ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_ANDROID_APP_FOR_SIMULATOR}"
-		cp ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_ANDROID_ENC_APP_FOR_SIMULATOR}
-	fi
-
-	echo "Cleaning old test app"
-	pkill -9 'iPhone Simulator'
-	rm -rf /tmp/wme_encTest.log
-
-	echo "Begin to launching $TEST_NAME"
-
-	${OPENH264_PERFTEST_ANDROID_TOOL_LAUNCH_ON_SIMULATOR} launch ${OPENH264_PERFTEST_ANDROID_ENC_APP_FOR_SIMULATOR}  --exit --stderr ${OPENH264_PERFTEST_ANDROID_CONSOLE} --stdout ${OPENH264_PERFTEST_ANDROID_CONSOLE} > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
-
-elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == iphoneos ]; then
+if [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == simulator ]; then
+	echo "Install package on simulator and start test"
+	exit 1;
+	
+elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ]; then
 	# for real device
-	if [ ! -f ${OPENH264_PERFTEST_ANDROID_TOOL_INSTALL_ON_DEVICE} ] ; then
-		echo "${OPENH264_PERFTEST_ANDROID_TOOL_INSTALL_ON_DEVICE} is not found, please make sure the file exists"
-		exit 1
-	else
-		echo "Find ${OPENH264_PERFTEST_ANDROID_TOOL_INSTALL_ON_DEVICE}"
-	fi
-
-	if [ ! -d ${OPENH264_PERFTEST_ANDROID_ENC_APP_FOR_DEVICE} ] ; then
-		echo "${OPENH264_PERFTEST_ANDROID_ENC_APP_FOR_DEVICE} is not found"
-		exit 1
-	else
-		echo "Find app ${OPENH264_PERFTEST_ANDROID_ENC_APP_FOR_DEVICE}"
-		echo "copy ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_ANDROID_APP_FOR_SIMULATOR}"
-		cp ${OPENH264_PERFTEST_SEQUENCE_PATH}/*.yuv ${OPENH264_PERFTEST_ANDROID_ENC_APP_FOR_DEVICE}
-	fi
+	echo echo "Install test sequences and related resources"
+	for i in $( ls ${OPENH264_PERFTEST_SEQUENCE_PATH} | grep .yuv )
+	do
+		adb push ${OPENH264_PERFTEST_SEQUENCE_PATH}/$i ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
+	done
+	adb push ${BASE_PATH}/../testbin/welsenc_android.cfg ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
+	adb push ${BASE_PATH}/../testbin/layer.cfg ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
 else
 	echo "parameters for platform is wrong : ${OPENH264_PERFTEST_ANDROID_PLATFORM}"
 fi
@@ -259,12 +221,12 @@ echo "##Run the test and analyze the result"
 
 cd ${BASE_PATH}
 
-if [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == iphonesimulator ] ; then
+if [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == simulator ] ; then
 	echo "Complete encoder performance test on simulator!"
 	exit 1
 
-elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == iphoneos ] ; then
-	PERF_TEST_ENC_APP_ID="cisco.encPerfTestApp"
+elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
+	PERF_TEST_ENC_APP_ID="com.wels.encPerfTestApp"
 	PERF_TEST_ENC_PATH="enc_result"
 	ENC_RESULT_SCRIPT_NAME="ExtractEncTestResult.py"
 	ENC_LOG_FILE_NAME="EncPerfTest.log"
@@ -272,7 +234,8 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == iphoneos ] ; then
 	END_FLAG_FILE_NAME="enc_progress.log"
 	
 	echo "Install and launch encoder performance test app"
-	InstallAndLaunchApp ${OPENH264_PERFTEST_ANDROID_TOOL_INSTALL_ON_DEVICE} ${OPENH264_PERFTEST_ANDROID_ENC_APP_FOR_DEVICE} ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR}
+	InstallAndLaunchApp ${OPENH264_PERFTEST_ANDROID_ENC_APP} ${PERF_TEST_ENC_APP_ID}
+	exit 0
 
 	echo "mount device"
 	OPENH264_PERFTEST_ANDROID_TOOL_MOUNT_DEVICE="ifuse"
