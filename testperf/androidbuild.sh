@@ -49,6 +49,7 @@ fi
 echo "Performance Test will run on ${OPENH264_PERFTEST_ANDROID_PLATFORM} with ${OPENH264_PERFTEST_ANDROID_DEBUG_RELEASE}"
 BASE_PATH=$(cd `dirname $0`; pwd)
 
+PLATFORM="android"
 ###############################################################################
 #generate test case
 
@@ -60,7 +61,6 @@ GENERATECASE_FILE_NAME="GenerateCase.py"
 CASE_FILE_NAME="case.cfg"
 CASELIST_ENC_FILE_NAME="enc_caselist.cfg"
 CASELIST_DEC_FILE_NAME="dec_caselist.cfg"
-PLATFORM="android"
 
 if [ -f ${CASELIST_ENC_FILE_NAME} ] ; then
 	rm ${CASELIST_ENC_FILE_NAME}
