@@ -142,6 +142,7 @@ def main():
         ListFilename[0] = "enc_caselist.cfg"
         ListFilename[1] = "dec_caselist.cfg"
     else:
+        Platform = sys.argv[1]
         CaseFilename = sys.argv[2]
         ListFilename[0] = sys.argv[3]
         if len(sys.argv)>4:
