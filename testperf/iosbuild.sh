@@ -60,6 +60,7 @@ GENERATECASE_FILE_NAME="GenerateCase.py"
 CASE_FILE_NAME="case.cfg"
 CASELIST_ENC_FILE_NAME="enc_caselist.cfg"
 CASELIST_DEC_FILE_NAME="dec_caselist.cfg"
+PLATFORM="ios"
 if [ -f ${CASELIST_ENC_FILE_NAME} ] ; then
 	rm ${CASELIST_ENC_FILE_NAME}
 fi
@@ -67,7 +68,7 @@ if [ -f ${CASELIST_DEC_FILE_NAME} ] ; then
 	rm ${CASELIST_DEC_FILE_NAME}
 fi
 
-python ${GENERATECASE_FILE_NAME} ${CASE_FILE_NAME} ${CASELIST_ENC_FILE_NAME} ${CASELIST_DEC_FILE_NAME}
+python ${GENERATECASE_FILE_NAME} ${PLATFORM} ${CASE_FILE_NAME} ${CASELIST_ENC_FILE_NAME} ${CASELIST_DEC_FILE_NAME}
 if [ ! -f ${CASELIST_ENC_FILE_NAME} ] ; then
 	echo "Generate encoder test case failed"
 	exit 1
