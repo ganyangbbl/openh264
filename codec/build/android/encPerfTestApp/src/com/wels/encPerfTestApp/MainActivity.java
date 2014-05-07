@@ -26,6 +26,10 @@ public class MainActivity extends Activity {
     private Button mBtnStart;
     private TextView mTvStatus;
 
+    private File mEndFile;
+    final String mEndFilePath = "/sdcard/encTest/";
+    final String mEndFileName = "enc_progress.log";
+
     /**
      * Called when the activity is first created.
      */
@@ -59,16 +63,35 @@ public class MainActivity extends Activity {
                         mTvStatus.setText("Encoder Test Completed");
                         //cpu.DisableUsage();
                         StopTimer();
+                        OutputProgress();
                         break;
                 }
             }
         };
+
+        mEndFile = new File(mEndFilePath+mEndFileName);
+        if (mEndFile.isFile() && mEndFile.exists()) {
+            mEndFile.delete();
+        }
 
         cpu = new CpuHelper();
         cpu.EnableUsage(3);
 
         mBtnStart.setOnClickListener(OnClickEvent);
 
+    }
+
+    private void OutputProgress() {
+        try {
+            if (! mEndFile.exists()) {
+                mEndFile.createNewFile();
+            }
+            BufferedWriter writer = new BufferedWriter(new FileWriter(mEndFile));
+            writer.write("flag");
+            writer.close();
+        } catch (Exception e) {
+            Log.e(TAG,"Write progress file failed"+e.getMessage());
+        }
     }
 
     private void StartTimer() {
@@ -143,7 +166,7 @@ class EncTestThread extends Thread {
                 DoEncTest(argv.length, argv);
             }
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, "DoEncTest failed"+e.getMessage());
         }
         mCfgList.clear();
         uiHandle.sendEmptyMessage(Messages.MSG_TEST_COMPLETED);
@@ -160,7 +183,7 @@ class EncTestThread extends Thread {
             }
             reader.close();
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, "Read case list file failed"+e.getMessage());
         }
     }
 
