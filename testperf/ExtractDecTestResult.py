@@ -4,7 +4,7 @@ import sys
 import string
 
 class ExtractDecTestResult:
-    def __init__(self):
+    def __init__(self,platform):
         self.fin_logfile = ""
         self.fout_resultfile = ""
 
@@ -15,7 +15,8 @@ class ExtractDecTestResult:
         self.pattern_FPS = "FPS:"
         self.pattern_CpuUsage = "CPU Usage:"
 
-        self.test_info = ["","",""]\
+        self.test_info = ["","",""]
+        self.platform = platform
 
     def OpenFile(self, LogFilename, ResultFilename):
         if os.path.exists(LogFilename):
@@ -56,6 +57,9 @@ class ExtractDecTestResult:
         while True:
             line = self.fin_logfile.readline()
             if line:
+                if self.platform == "android":
+                    line_sub = re.split("/welsdec \(\d+\): ",line,1)
+                    line = line_sub[1]
                 if re.search(pattern_endcase,line):
                     break
                 if re.search(self.pattern_testfile,line):
@@ -77,6 +81,8 @@ class ExtractDecTestResult:
             return
         if len(cpu_usage_array)>1:
             cpu_usage_array.remove(min(cpu_usage_array))
+            while min(cpu_usage_array) == 0:
+                cpu_usage_array.remove(0)
         self.test_info[2] = sum(cpu_usage_array)/len(cpu_usage_array)
 
     def WriteResult(self):
@@ -85,12 +91,17 @@ class ExtractDecTestResult:
         self.fout_resultfile.write('\n')
         
 def main():
-    if len(sys.argv)<3:
+    if len(sys.argv)<2:
+        print "please specify the platform: 'ios' or 'android'"
+        sys.exit(1)
+    elif len(sys.argv)<4:
+        Platform = sys.argv[1]
         LogFilename = "DecPerfTest.log";
         ResultFilename = "DecPerformance.csv"
     else:
-        LogFilename = sys.argv[1]
-        ResultFilename = sys.argv[2]
+        Platform = sys.argv[1]
+        LogFilename = sys.argv[2]
+        ResultFilename = sys.argv[3]
 
     extractor = ExtractDecTestResult()
     if extractor.OpenFile(LogFilename, ResultFilename):
