@@ -129,8 +129,9 @@ function MountAppDocuments()
 {
 	RET_VALUE=""
 	
-	while [ ${RET_VALUE}!="flag" ]
+	while [[ ${RET_VALUE} != "flag" ]]
 	do
+		sleep 10
 		echo "wait for testing $2"
 		RET_VALUE=`adb shell cat $1/$2`
 	done
@@ -183,10 +184,11 @@ echo "###################################################################"
 echo "##Detect test environment"
 
 OPENH264_PERFTEST_ANDROID_CONSOLE="/tmp/wme_encTest.log"
-OPENH264_PERFTEST_ANDROID_ENC_APP=${OPENH264_PERFTEST_ANDROID_ENC_APP_PATH}/${encPerfTestApp}-debug-unaligned.apk
+OPENH264_PERFTEST_ANDROID_ENC_APP=${OPENH264_PERFTEST_ANDROID_ENC_APP_PATH}/${ENC_PROJECT_NAME}-debug-unaligned.apk
 OPENH264_PERFTEST_ANDROID_DEC_APP=${OPENH264_PERFTEST_ANDROID_DEC_APP_PATH}/${DEC_PROJECT_NAME}-debug-unaligned.apk
 
 OPENH264_PERFTEST_SEQUENCE_PATH="${BASE_PATH}/../../TestVideo"
+OPENH264_PERFTET_WORKPATH_ON_DEVICE="/sdcard"
 OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE="/sdcard/encTest"
 OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE="/sdcard/decTest"
 
@@ -198,11 +200,11 @@ if [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == simulator ]; then
 	
 elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ]; then
 	# for real device
-	echo echo "Install test sequences and related resources"
+	echo "Install test sequences and related resources"
 
-	adb shell
-	if [ ! -d ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE} ] ; then
-		mkdir ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
+	if [ ! `adb shell ls ${OPENH264_PERFTET_WORKPATH_ON_DEVICE} | grep encTest` ] ; then
+		echo "make directory ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}"
+		adb shell mkdir ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
 	fi
 	for i in $( ls ${OPENH264_PERFTEST_SEQUENCE_PATH} | grep .yuv )
 	do
@@ -212,7 +214,7 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ]; then
 	done
 	adb push ${BASE_PATH}/../testbin/welsenc_android.cfg ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
 	adb push ${BASE_PATH}/../testbin/layer2.cfg ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
-	adb push ${BASE_PATH}/${CASELIST_ENC_FILE_NAME}
+	adb push ${BASE_PATH}/${CASELIST_ENC_FILE_NAME} ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
 else
 	echo "parameters for platform is wrong : ${OPENH264_PERFTEST_ANDROID_PLATFORM}"
 fi
@@ -238,13 +240,15 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 	END_FLAG_FILE_NAME="enc_progress.log"
 	
 	echo "Install and launch encoder performance test app"
+	adb logcat -c
+	adb shell rm ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}/${ENC_LOG_FILE_NAME}
 	InstallAndLaunchApp ${OPENH264_PERFTEST_ANDROID_ENC_APP} ${PERF_TEST_ENC_APP_ID}
 
 	MountAppDocuments ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE} ${END_FLAG_FILE_NAME}
-	exit 0
+	adb logcat -d -f ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}/${ENC_LOG_FILE_NAME} -s welsenc
 	
-	echo "copy 264 bs files to decoder performance test workspace"
-	cp ${PERF_TEST_ENC_PATH}/*.264 ${OPENH264_PERFTEST_ANDROID_DEC_APP_FOR_DEVICE}
+	#echo "copy 264 bs files to decoder performance test workspace"
+	#cp ${PERF_TEST_ENC_PATH}/*.264 ${OPENH264_PERFTEST_ANDROID_DEC_APP_FOR_DEVICE}
 	
 	# PERF_TEST_DEC_APP_ID="com.wels.decPerfTestApp"
 	# PERF_TEST_DEC_PATH="dec_result"
@@ -265,8 +269,9 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 	if [ -f ${ENC_LOG_FILE_NAME} ] ; then
 		rm ${ENC_LOG_FILE_NAME}
 	fi
-	cp ${PERF_TEST_ENC_PATH}/${ENC_LOG_FILE_NAME} ${BASE_PATH}
-
+	adb pull ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}/${ENC_LOG_FILE_NAME} ${BASE_PATH}
+	exit 0
+	
 	python ${ENC_RESULT_SCRIPT_NAME} ${ENC_LOG_FILE_NAME} ${ENC_RESULT_FILE_NAME}
 	if [ ! -f ${ENC_RESULT_FILE_NAME} ] ; then
 		echo "Extract result failed"
@@ -288,7 +293,6 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 		# exit 1
 	# fi
 
-	rm -r *.trace
 	rm ${PERF_TEST_ENC_PATH}/*.264 ${PERF_TEST_ENC_PATH}/*.log
 	rm ${PERF_TEST_DEC_PATH}/*.yuv ${PERF_TEST_DEC_PATH}/*.log
 

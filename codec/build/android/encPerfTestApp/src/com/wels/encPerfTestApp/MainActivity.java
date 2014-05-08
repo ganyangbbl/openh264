@@ -123,7 +123,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private  static final String TAG = "MainActivity";
+    private  static final String TAG = "welsenc";
     static {
         try {
             System.loadLibrary("wels");
@@ -158,12 +158,16 @@ class EncTestThread extends Thread {
             for (int i=0; i<mCfgList.size(); i++) {
                 String cmd = mCfgList.get(i);
                 String argv[] = cmd.split(" ");
+                Log.i(TAG,"######Encoder Test "+i+" Start########");
+                Log.i(TAG,"Test file: "+argv[3]);
+                Log.i(TAG,"cfg file: "+argv[1]);
+                Log.i(TAG,"bs file: "+argv[5]);
                 argv[1] = mWorkPath+argv[1];
                 argv[3] = mWorkPath+argv[3];
                 argv[5] = mWorkPath+argv[5];
                 argv[8] = mWorkPath+argv[8];
-                Log.i(TAG,argv[3]);
                 DoEncTest(argv.length, argv);
+                Log.i(TAG,"######Encoder Test "+i+" Completed########");
             }
         } catch (Exception e) {
             Log.e(TAG, "DoEncTest failed"+e.getMessage());
