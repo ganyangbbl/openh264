@@ -127,20 +127,16 @@ function InstallAndLaunchApp()
 
 function MountAppDocuments()
 {
-	adb shell
+	RET_VALUE=""
 	
-	cd $1
-	
-	while [ ! -f "$1/$2" ] 
+	while [ ${RET_VALUE}!="flag" ]
 	do
-		sleep 10
 		echo "wait for testing $2"
+		RET_VALUE=`adb shell cat $1/$2`
 	done
 	echo "Test in $2 successfully"
 
-	ls $1
-	
-	exit
+	adb shell ls $1
 }
 
 ###############################################################################
@@ -163,7 +159,8 @@ if ! which ${ANDROID_PACKAGE_TOOL} ; then
 	echo "${ANDROID_PACKAGE_TOOL} is not installed, please install it"
 fi
 echo "build libraries ..."
-make clean && make OS=android NDKROOT=${ANDROID_NDK_HOME} TARGET=${ANDROID_TARGET} > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
+make clean > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
+make OS=android NDKROOT=${ANDROID_NDK_HOME} TARGET=${ANDROID_TARGET} > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
 
 ###############################################################################
 cd ${OPENH264_PERFTEST_ANDROID_ENC_PROJECT_PATH}
@@ -202,9 +199,16 @@ if [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == simulator ]; then
 elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ]; then
 	# for real device
 	echo echo "Install test sequences and related resources"
+
+	adb shell
+	if [ ! -d ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE} ] ; then
+		mkdir ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
+	fi
 	for i in $( ls ${OPENH264_PERFTEST_SEQUENCE_PATH} | grep .yuv )
 	do
-		adb push ${OPENH264_PERFTEST_SEQUENCE_PATH}/$i ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
+		if [ ! `adb shell ls ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE} | grep $i` ] ; then
+			adb push ${OPENH264_PERFTEST_SEQUENCE_PATH}/$i ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
+		fi
 	done
 	adb push ${BASE_PATH}/../testbin/welsenc_android.cfg ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
 	adb push ${BASE_PATH}/../testbin/layer2.cfg ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
@@ -242,17 +246,17 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 	echo "copy 264 bs files to decoder performance test workspace"
 	cp ${PERF_TEST_ENC_PATH}/*.264 ${OPENH264_PERFTEST_ANDROID_DEC_APP_FOR_DEVICE}
 	
-	PERF_TEST_DEC_APP_ID="cisco.decPerfTestApp"
-	PERF_TEST_DEC_PATH="dec_result"
-	DEC_RESULT_SCRIPT_NAME="ExtractDecTestResult.py"
-	DEC_LOG_FILE_NAME="DecPerfTest.log"
-	DEC_RESULT_FILE_NAME="DecPerformance.csv"
-	END_FLAG_FILE_NAME="dec_progress.log"
+	# PERF_TEST_DEC_APP_ID="com.wels.decPerfTestApp"
+	# PERF_TEST_DEC_PATH="dec_result"
+	# DEC_RESULT_SCRIPT_NAME="ExtractDecTestResult.py"
+	# DEC_LOG_FILE_NAME="DecPerfTest.log"
+	# DEC_RESULT_FILE_NAME="DecPerformance.csv"
+	# END_FLAG_FILE_NAME="dec_progress.log"
 	
-	echo "Install and launch decoder performance test app"
-	InstallAndLaunchApp ${OPENH264_PERFTEST_ANDROID_TOOL_INSTALL_ON_DEVICE} ${OPENH264_PERFTEST_ANDROID_DEC_APP_FOR_DEVICE} ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR}
+	# echo "Install and launch decoder performance test app"
+	# InstallAndLaunchApp ${OPENH264_PERFTEST_ANDROID_DEC_APP} ${PERF_TEST_DEC_APP_ID}
 	
-	MountAppDocuments ${OPENH264_PERFTEST_ANDROID_TOOL_MOUNT_DEVICE} ${PERF_TEST_DEC_APP_ID} ${PERF_TEST_DEC_PATH} ${END_FLAG_FILE_NAME}
+	# MountAppDocuments ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE} ${END_FLAG_FILE_NAME}
 
 	echo "Start extract result from encoder log"
 	if [ -f ${ENC_RESULT_FILE_NAME} ] ; then
@@ -266,35 +270,27 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 	python ${ENC_RESULT_SCRIPT_NAME} ${ENC_LOG_FILE_NAME} ${ENC_RESULT_FILE_NAME}
 	if [ ! -f ${ENC_RESULT_FILE_NAME} ] ; then
 		echo "Extract result failed"
-		umount ${PERF_TEST_ENC_PATH}
-		umount ${PERF_TEST_DEC_PATH}
 		exit 1
 	fi
 	
-	echo "Start extract result from decoder log"
-	if [ -f ${DEC_RESULT_FILE_NAME} ] ; then
-		rm ${DEC_RESULT_FILE_NAME}
-	fi
-	if [ -f ${DEC_LOG_FILE_NAME} ] ; then
-		rm ${DEC_LOG_FILE_NAME}
-	fi
-	cp ${PERF_TEST_DEC_PATH}/${DEC_LOG_FILE_NAME} ${BASE_PATH}
+	# echo "Start extract result from decoder log"
+	# if [ -f ${DEC_RESULT_FILE_NAME} ] ; then
+		# rm ${DEC_RESULT_FILE_NAME}
+	# fi
+	# if [ -f ${DEC_LOG_FILE_NAME} ] ; then
+		# rm ${DEC_LOG_FILE_NAME}
+	# fi
+	# cp ${PERF_TEST_DEC_PATH}/${DEC_LOG_FILE_NAME} ${BASE_PATH}
 
-	python ${DEC_RESULT_SCRIPT_NAME} ${DEC_LOG_FILE_NAME} ${DEC_RESULT_FILE_NAME}
-	if [ ! -f ${DEC_RESULT_FILE_NAME} ] ; then
-		echo "Extract result failed"
-		umount ${PERF_TEST_ENC_PATH}
-		umount ${PERF_TEST_DEC_PATH}
-		exit 1
-	fi
+	# python ${DEC_RESULT_SCRIPT_NAME} ${DEC_LOG_FILE_NAME} ${DEC_RESULT_FILE_NAME}
+	# if [ ! -f ${DEC_RESULT_FILE_NAME} ] ; then
+		# echo "Extract result failed"
+		# exit 1
+	# fi
 
 	rm -r *.trace
 	rm ${PERF_TEST_ENC_PATH}/*.264 ${PERF_TEST_ENC_PATH}/*.log
 	rm ${PERF_TEST_DEC_PATH}/*.yuv ${PERF_TEST_DEC_PATH}/*.log
-	
-
-	umount ${PERF_TEST_ENC_PATH}
-	umount ${PERF_TEST_DEC_PATH}
 
 	echo "Complete Extract Test Result"
 	
