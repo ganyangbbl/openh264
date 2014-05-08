@@ -137,7 +137,7 @@ def main():
         print "please specfiy the platform: 'ios' or 'android'"
         sys.exit(1)
     elif len(sys.argv)<4:
-        Platform = "common"
+        Platform = sys.argv[1]
         CaseFilename = "case.cfg"
         ListFilename[0] = "enc_caselist.cfg"
         ListFilename[1] = "dec_caselist.cfg"
