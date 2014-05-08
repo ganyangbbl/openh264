@@ -270,13 +270,13 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 		rm ${ENC_LOG_FILE_NAME}
 	fi
 	adb pull ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}/${ENC_LOG_FILE_NAME} ${BASE_PATH}
-	exit 0
 	
-	python ${ENC_RESULT_SCRIPT_NAME} ${ENC_LOG_FILE_NAME} ${ENC_RESULT_FILE_NAME}
+	python ${PLATFORM} ${ENC_RESULT_SCRIPT_NAME} ${ENC_LOG_FILE_NAME} ${ENC_RESULT_FILE_NAME}
 	if [ ! -f ${ENC_RESULT_FILE_NAME} ] ; then
 		echo "Extract result failed"
 		exit 1
 	fi
+	exit 0
 	
 	# echo "Start extract result from decoder log"
 	# if [ -f ${DEC_RESULT_FILE_NAME} ] ; then
@@ -287,7 +287,7 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 	# fi
 	# cp ${PERF_TEST_DEC_PATH}/${DEC_LOG_FILE_NAME} ${BASE_PATH}
 
-	# python ${DEC_RESULT_SCRIPT_NAME} ${DEC_LOG_FILE_NAME} ${DEC_RESULT_FILE_NAME}
+	# python ${PLATFORM} ${DEC_RESULT_SCRIPT_NAME} ${DEC_LOG_FILE_NAME} ${DEC_RESULT_FILE_NAME}
 	# if [ ! -f ${DEC_RESULT_FILE_NAME} ] ; then
 		# echo "Extract result failed"
 		# exit 1
