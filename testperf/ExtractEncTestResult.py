@@ -59,7 +59,7 @@ class ExtractEncTestResult:
             line = self.fin_logfile.readline()
             if line:
                 if self.platform == "android":
-                    line_sub = re.split("/welsenc \(\d+\): ",line,1)
+                    line_sub = re.split("/welsenc \(\s*\d+\): ",line,1)
                     line = line_sub[1]
                 if re.search(pattern_endcase,line):
                     break

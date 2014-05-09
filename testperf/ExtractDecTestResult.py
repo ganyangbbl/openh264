@@ -58,7 +58,7 @@ class ExtractDecTestResult:
             line = self.fin_logfile.readline()
             if line:
                 if self.platform == "android":
-                    line_sub = re.split("/welsdec \(\d+\): ",line,1)
+                    line_sub = re.split("/welsdec \(\s*\d+\): ",line,1)
                     line = line_sub[1]
                 if re.search(pattern_endcase,line):
                     break
