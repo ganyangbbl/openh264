@@ -81,7 +81,7 @@ class ExtractDecTestResult:
             return
         if len(cpu_usage_array)>1:
             cpu_usage_array.remove(min(cpu_usage_array))
-            while min(cpu_usage_array) == 0:
+            while min(cpu_usage_array) == 0 and len(cpu_usage_array)>1:
                 cpu_usage_array.remove(0)
         self.test_info[2] = sum(cpu_usage_array)/len(cpu_usage_array)
 
