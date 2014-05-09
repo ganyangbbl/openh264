@@ -6,19 +6,19 @@
 #define LOG_TAG "welsdec"
 #define LOGI(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
-extern "C" int DecMain (int argc, char **argv);
+extern int DecMain (int argc, char* argv[]);
 
 extern "C"
 JNIEXPORT void JNICALL Java_com_wels_decPerfTestApp_DecTestThread_DoDecTest
-(JNIEnv *env, jobject thiz, jint argc, jobjectArray cmd) {
-  char *argv[32];
-  jstring str;
-
-  for (int i=0; i<argc; i++)
-  {
-    str = (jstring)((*env).GetObjectArrayElement(cmd, i));
-    argv[i] = (char*) ((*env).GetStringUTFChars (str, NULL));
-  }
+(JNIEnv* env, jobject thiz, jstring jsFileNameIn, jstring jsFileNameOut) {
+  char* argv[3];
+  int  argc = 3;
+  argv[0] = (char*) ("decConsole.exe");
+  argv[1] = (char*) ((*env).GetStringUTFChars (jsFileNameIn, NULL));
+  argv[2] = (char*) ((*env).GetStringUTFChars (jsFileNameOut, NULL));
 
   DecMain (argc, argv);
 }
+
+
+

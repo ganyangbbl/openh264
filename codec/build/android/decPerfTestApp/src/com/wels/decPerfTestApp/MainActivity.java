@@ -144,7 +144,7 @@ class DecTestThread extends Thread {
     final String mCaselistName = "dec_caselist.cfg";
     Vector<String> mCfgList = new Vector<String>();
 
-    public native void DoDecTest(int argc, String[] cmd);
+    public native void DoDecTest(String filenamein, String filenameout);
 
     DecTestThread (Handler handler) {
         uiHandle = handler;
@@ -159,14 +159,11 @@ class DecTestThread extends Thread {
                 String cmd = mCfgList.get(i);
                 String argv[] = cmd.split(" ");
                 Log.i(TAG,"######Decoder Test "+i+" Start########");
-                Log.i(TAG,"Test file: "+argv[3]);
-                Log.i(TAG,"cfg file: "+argv[1]);
-                Log.i(TAG,"bs file: "+argv[5]);
+                Log.i(TAG,"Test file: "+argv[1]);
+                Log.i(TAG,"YUV file: "+argv[2]);
                 argv[1] = mWorkPath+argv[1];
-                argv[3] = mWorkPath+argv[3];
-                argv[5] = mWorkPath+argv[5];
-                argv[8] = mWorkPath+argv[8];
-                DoDecTest(argv.length, argv);
+                argv[2] = mWorkPath+argv[2];
+                DoDecTest(argv[1], argv[2]);
                 Log.i(TAG,"######Decoder Test "+i+" Completed########");
             }
         } catch (Exception e) {

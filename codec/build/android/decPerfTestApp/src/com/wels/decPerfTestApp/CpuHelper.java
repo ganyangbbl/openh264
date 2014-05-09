@@ -1,4 +1,4 @@
-package com.wels.encPerfTestApp;
+package com.wels.decPerfTestApp;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

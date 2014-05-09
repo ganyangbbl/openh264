@@ -1,4 +1,4 @@
-package com.wels.encPerfTestApp;
+package com.wels.decPerfTestApp;
 
 public class Constants {
     public static final int DEFAULT_SPEAKER_VOLUME = 32768;
