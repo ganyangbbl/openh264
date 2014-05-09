@@ -175,7 +175,7 @@ buildProject ${ENC_PROJECT_NAME} ${ANDROID_TARGET} ${ANDROID_PACKAGE_TOOL}
 DEC_PROJECT_NAME=decPerfTestApp
 
 echo "build ${DEC_PROJECT_NAME} and package"
-#buildProject ${DEC_PROJECT_NAME} ${ANDROID_TARGET} ${ANDROID_PACKAGE_TOOL}
+buildProject ${DEC_PROJECT_NAME} ${ANDROID_TARGET} ${ANDROID_PACKAGE_TOOL}
 
 ###############################################################################
 #Detect and prepare test environment
@@ -247,20 +247,20 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 	MountAppDocuments ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE} ${END_FLAG_FILE_NAME}
 	adb logcat -d -f ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}/${ENC_LOG_FILE_NAME} -s welsenc
 	
-	#echo "copy 264 bs files to decoder performance test workspace"
-	#cp ${PERF_TEST_ENC_PATH}/*.264 ${OPENH264_PERFTEST_ANDROID_DEC_APP_FOR_DEVICE}
+	echo "copy 264 bs files to decoder performance test workspace"
+	adb shell cp ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}/*.264 ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE}
 	
-	# PERF_TEST_DEC_APP_ID="com.wels.decPerfTestApp"
-	# PERF_TEST_DEC_PATH="dec_result"
-	# DEC_RESULT_SCRIPT_NAME="ExtractDecTestResult.py"
-	# DEC_LOG_FILE_NAME="DecPerfTest.log"
-	# DEC_RESULT_FILE_NAME="DecPerformance.csv"
-	# END_FLAG_FILE_NAME="dec_progress.log"
+	PERF_TEST_DEC_APP_ID="com.wels.decPerfTestApp"
+	PERF_TEST_DEC_PATH="dec_result"
+	DEC_RESULT_SCRIPT_NAME="ExtractDecTestResult.py"
+	DEC_LOG_FILE_NAME="DecPerfTest.log"
+	DEC_RESULT_FILE_NAME="DecPerformance.csv"
+	END_FLAG_FILE_NAME="dec_progress.log"
 	
-	# echo "Install and launch decoder performance test app"
-	# InstallAndLaunchApp ${OPENH264_PERFTEST_ANDROID_DEC_APP} ${PERF_TEST_DEC_APP_ID}
+	echo "Install and launch decoder performance test app"
+	InstallAndLaunchApp ${OPENH264_PERFTEST_ANDROID_DEC_APP} ${PERF_TEST_DEC_APP_ID}
 	
-	# MountAppDocuments ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE} ${END_FLAG_FILE_NAME}
+	MountAppDocuments ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE} ${END_FLAG_FILE_NAME}
 
 	echo "Start extract result from encoder log"
 	if [ -f ${ENC_RESULT_FILE_NAME} ] ; then
@@ -278,23 +278,23 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 	fi
 	exit 0
 	
-	# echo "Start extract result from decoder log"
-	# if [ -f ${DEC_RESULT_FILE_NAME} ] ; then
-		# rm ${DEC_RESULT_FILE_NAME}
-	# fi
-	# if [ -f ${DEC_LOG_FILE_NAME} ] ; then
-		# rm ${DEC_LOG_FILE_NAME}
-	# fi
-	# cp ${PERF_TEST_DEC_PATH}/${DEC_LOG_FILE_NAME} ${BASE_PATH}
+	echo "Start extract result from decoder log"
+	if [ -f ${DEC_RESULT_FILE_NAME} ] ; then
+		rm ${DEC_RESULT_FILE_NAME}
+	fi
+	if [ -f ${DEC_LOG_FILE_NAME} ] ; then
+		rm ${DEC_LOG_FILE_NAME}
+	fi
+	adb pull ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE}/${DEC_LOG_FILE_NAME} ${BASE_PATH}
 
-	# python ${DEC_RESULT_SCRIPT_NAME} ${PLATFORM} ${DEC_LOG_FILE_NAME} ${DEC_RESULT_FILE_NAME}
-	# if [ ! -f ${DEC_RESULT_FILE_NAME} ] ; then
-		# echo "Extract result failed"
-		# exit 1
-	# fi
+	python ${DEC_RESULT_SCRIPT_NAME} ${PLATFORM} ${DEC_LOG_FILE_NAME} ${DEC_RESULT_FILE_NAME}
+	if [ ! -f ${DEC_RESULT_FILE_NAME} ] ; then
+		echo "Extract result failed"
+		exit 1
+	fi
 
-	rm ${PERF_TEST_ENC_PATH}/*.264 ${PERF_TEST_ENC_PATH}/*.log
-	rm ${PERF_TEST_DEC_PATH}/*.yuv ${PERF_TEST_DEC_PATH}/*.log
+	adb shell rm ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}/*.264 ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}/*.log
+	adb shell rm ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE}/*.yuv ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE}/*.264 ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE}/*.log
 
 	echo "Complete Extract Test Result"
 	
