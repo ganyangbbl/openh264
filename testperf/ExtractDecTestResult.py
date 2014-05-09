@@ -103,7 +103,7 @@ def main():
         LogFilename = sys.argv[2]
         ResultFilename = sys.argv[3]
 
-    extractor = ExtractDecTestResult()
+    extractor = ExtractDecTestResult(Platform)
     if extractor.OpenFile(LogFilename, ResultFilename):
         sys.exit(1)
     print "Load log file: %s"%(LogFilename)
