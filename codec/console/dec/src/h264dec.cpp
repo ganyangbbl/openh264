@@ -219,7 +219,7 @@ void H264DecodeInstance (ISVCDecoder* pDecoder, const char* kpH264FileName, cons
     iEnd	= WelsTime();
     iTotal	+= iEnd - iStart;
     if (sDstBufInfo.iBufferStatus == 1) {
-      cOutputModule.Process ((void**)pDst, &sDstBufInfo, pYuvFile);
+      //cOutputModule.Process ((void**)pDst, &sDstBufInfo, pYuvFile);
       iWidth  = sDstBufInfo.UsrData.sSystemBuffer.iWidth;
       iHeight = sDstBufInfo.UsrData.sSystemBuffer.iHeight;
 
@@ -253,7 +253,7 @@ void H264DecodeInstance (ISVCDecoder* pDecoder, const char* kpH264FileName, cons
   }
 
   if (sDstBufInfo.iBufferStatus == 1) {
-    cOutputModule.Process ((void**)pDst, &sDstBufInfo, pYuvFile);
+    //cOutputModule.Process ((void**)pDst, &sDstBufInfo, pYuvFile);
     iWidth  = sDstBufInfo.UsrData.sSystemBuffer.iWidth;
     iHeight = sDstBufInfo.UsrData.sSystemBuffer.iHeight;
 

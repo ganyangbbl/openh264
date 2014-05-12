@@ -59,7 +59,7 @@ class ExtractEncTestResult:
             line = self.fin_logfile.readline()
             if line:
                 if self.platform == "android":
-                    line_sub = re.split("/welsenc \(\d+\): ",line,1)
+                    line_sub = re.split("/welsenc \(\s*\d+\): ",line,1)
                     line = line_sub[1]
                 if re.search(pattern_endcase,line):
                     break
@@ -91,7 +91,7 @@ class ExtractEncTestResult:
             return
         if len(cpu_usage_array)>1:
             cpu_usage_array.remove(min(cpu_usage_array))
-            while min(cpu_usage_array) == 0:
+            while min(cpu_usage_array) == 0 and len(cpu_usage_array)>1:
                 cpu_usage_array.remove(0)
         self.test_info[5] = sum(cpu_usage_array)/len(cpu_usage_array)
 

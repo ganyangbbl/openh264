@@ -58,7 +58,7 @@ class ExtractDecTestResult:
             line = self.fin_logfile.readline()
             if line:
                 if self.platform == "android":
-                    line_sub = re.split("/welsdec \(\d+\): ",line,1)
+                    line_sub = re.split("/welsdec \(\s*\d+\): ",line,1)
                     line = line_sub[1]
                 if re.search(pattern_endcase,line):
                     break
@@ -81,7 +81,7 @@ class ExtractDecTestResult:
             return
         if len(cpu_usage_array)>1:
             cpu_usage_array.remove(min(cpu_usage_array))
-            while min(cpu_usage_array) == 0:
+            while min(cpu_usage_array) == 0 and len(cpu_usage_array)>1:
                 cpu_usage_array.remove(0)
         self.test_info[2] = sum(cpu_usage_array)/len(cpu_usage_array)
 
@@ -103,7 +103,7 @@ def main():
         LogFilename = sys.argv[2]
         ResultFilename = sys.argv[3]
 
-    extractor = ExtractDecTestResult()
+    extractor = ExtractDecTestResult(Platform)
     if extractor.OpenFile(LogFilename, ResultFilename):
         sys.exit(1)
     print "Load log file: %s"%(LogFilename)
