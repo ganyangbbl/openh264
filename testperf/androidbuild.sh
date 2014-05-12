@@ -91,8 +91,8 @@ else
 	echo "Find git tool"
 fi
 
-#git checkout android-test
-#git pull upstream master
+git checkout android-test
+git pull upstream master
 
 ###############################################################################
 echo "###################################################################"
@@ -120,9 +120,9 @@ function buildProject()
 function InstallAndLaunchApp()
 {
 	echo "Install apk $1 on device"
-	adb install -r $1 > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
+	adb install -r $1 #> ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
 	echo "Launching the app $2"
-	adb shell am start -n $2/.MainActivity > ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
+	adb shell am start -n $2/.MainActivity #> ${OPENH264_PERFTEST_ANDROID_STD_OUT_ERR} 2>&1
 }
 
 function MountAppDocuments()
@@ -171,7 +171,7 @@ echo "build ${ENC_PROJECT_NAME} and package"
 buildProject ${ENC_PROJECT_NAME} ${ANDROID_TARGET} ${ANDROID_PACKAGE_TOOL}
 
 ###############################################################################
-#cd ${OPENH264_PERFTEST_ANDROID_DEC_PROJECT_PATH}
+cd ${OPENH264_PERFTEST_ANDROID_DEC_PROJECT_PATH}
 DEC_PROJECT_NAME=decPerfTestApp
 
 echo "build ${DEC_PROJECT_NAME} and package"
@@ -215,6 +215,13 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ]; then
 	adb push ${BASE_PATH}/../testbin/welsenc_android.cfg ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
 	adb push ${BASE_PATH}/../testbin/layer2.cfg ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
 	adb push ${BASE_PATH}/${CASELIST_ENC_FILE_NAME} ${OPENH264_PERFTEST_ENCODER_WORKPATH_ON_DEVICE}
+	
+	if [ ! `adb shell ls ${OPENH264_PERFTET_WORKPATH_ON_DEVICE} | grep decTest` ] ; then
+		echo "make directory ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE}"
+		adb shell mkdir ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE}
+	fi
+	adb push ${BASE_PATH}/${CASELIST_DEC_FILE_NAME} ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE}
+	
 else
 	echo "parameters for platform is wrong : ${OPENH264_PERFTEST_ANDROID_PLATFORM}"
 fi
@@ -258,9 +265,12 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 	END_FLAG_FILE_NAME="dec_progress.log"
 	
 	echo "Install and launch decoder performance test app"
+	adb logcat -c
+	adb shell rm ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE}/${ENC_LOG_FILE_NAME}
 	InstallAndLaunchApp ${OPENH264_PERFTEST_ANDROID_DEC_APP} ${PERF_TEST_DEC_APP_ID}
 	
 	MountAppDocuments ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE} ${END_FLAG_FILE_NAME}
+	adb logcat -d -f ${OPENH264_PERFTEST_DECODER_WORKPATH_ON_DEVICE}/${DEC_LOG_FILE_NAME} -s welsdec
 
 	echo "Start extract result from encoder log"
 	if [ -f ${ENC_RESULT_FILE_NAME} ] ; then
@@ -276,7 +286,6 @@ elif [ ${OPENH264_PERFTEST_ANDROID_PLATFORM} == device ] ; then
 		echo "Extract result failed"
 		exit 1
 	fi
-	exit 0
 	
 	echo "Start extract result from decoder log"
 	if [ -f ${DEC_RESULT_FILE_NAME} ] ; then
