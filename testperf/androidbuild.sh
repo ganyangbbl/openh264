@@ -51,6 +51,21 @@ BASE_PATH=$(cd `dirname $0`; pwd)
 
 PLATFORM="android"
 ###############################################################################
+#Update code
+
+echo "###################################################################"
+echo "##Update code"
+if ! which git ; then
+	echo "git is not found, please install it"
+	exit 1
+else
+	echo "Find git tool"
+fi
+
+git checkout android-test
+git pull upstream master
+
+###############################################################################
 #generate test case
 
 echo "###################################################################"
@@ -78,21 +93,6 @@ if [ ! -f ${CASELIST_DEC_FILE_NAME} ] ; then
 	echo "Generate decoder test case failed"
 	exit 1
 fi
-
-###############################################################################
-#Update code
-
-echo "###################################################################"
-echo "##Update code"
-if ! which git ; then
-	echo "git is not found, please install it"
-	exit 1
-else
-	echo "Find git tool"
-fi
-
-git checkout android-test
-git pull upstream master
 
 ###############################################################################
 echo "###################################################################"

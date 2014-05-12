@@ -51,6 +51,21 @@ BASE_PATH=$(cd `dirname $0`; pwd)
 
 PLATFORM="ios"
 ###############################################################################
+#Update code
+
+echo "###################################################################"
+echo "##Update code"
+if ! which git ; then
+	echo "git is not found, please install it"
+	exit 1
+else
+	echo "Find git tool"
+fi
+
+git checkout ios-test
+git pull upstream master
+
+###############################################################################
 #generate test case
 
 echo "###################################################################"
@@ -78,21 +93,6 @@ if [ ! -f ${CASELIST_DEC_FILE_NAME} ] ; then
 	echo "Generate decoder test case failed"
 	exit 1
 fi
-
-###############################################################################
-#Update code
-
-echo "###################################################################"
-echo "##Update code"
-if ! which git ; then
-	echo "git is not found, please install it"
-	exit 1
-else
-	echo "Find git tool"
-fi
-
-git checkout ios-test
-git pull upstream master
 
 ###############################################################################
 echo "###################################################################"
@@ -358,7 +358,7 @@ elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ] ; then
 	fi
 	cp ${PERF_TEST_ENC_PATH}/${ENC_LOG_FILE_NAME} ${BASE_PATH}
 
-	python ${ENC_RESULT_SCRIPT_NAME} ${ENC_LOG_FILE_NAME} ${ENC_RESULT_FILE_NAME}
+	python ${ENC_RESULT_SCRIPT_NAME} ${PLATFORM} ${ENC_LOG_FILE_NAME} ${ENC_RESULT_FILE_NAME}
 	if [ ! -f ${ENC_RESULT_FILE_NAME} ] ; then
 		echo "Extract result failed"
 		umount ${PERF_TEST_ENC_PATH}
@@ -375,18 +375,32 @@ elif [ ${OPENH264_PERFTEST_IOS_PLATFORM} == iphoneos ] ; then
 	fi
 	cp ${PERF_TEST_DEC_PATH}/${DEC_LOG_FILE_NAME} ${BASE_PATH}
 
-	python ${DEC_RESULT_SCRIPT_NAME} ${DEC_LOG_FILE_NAME} ${DEC_RESULT_FILE_NAME}
+	python ${DEC_RESULT_SCRIPT_NAME} ${PLATFORM} ${DEC_LOG_FILE_NAME} ${DEC_RESULT_FILE_NAME}
 	if [ ! -f ${DEC_RESULT_FILE_NAME} ] ; then
 		echo "Extract result failed"
 		umount ${PERF_TEST_ENC_PATH}
 		umount ${PERF_TEST_DEC_PATH}
 		exit 1
 	fi
+	
+	echo "Start Generate Report"
+	GENERATE_REPORT_SCRIPT_NAME="GenerateReport.py"
+	REPORT_FILE_NAME="Report.csv"
+	
+	if [ -f ${REPORT_FILE_NAME} ] ; then
+		rm ${REPORT_FILE_NAME}
+	fi
+	
+	python ${GENERATE_REPORT_SCRIPT_NAME} ${ENC_RESULT_FILE_NAME} ${DEC_RESULT_FILE_NAME} ${REPORT_FILE_NAME}
+	if [ ! -f ${REPORT_FILE_NAME} ] ; then
+		echo "Generate report failed"
+		exit 1
+	fi
+	echo "complete Generate Report"
 
 	rm -r *.trace
 	rm ${PERF_TEST_ENC_PATH}/*.264 ${PERF_TEST_ENC_PATH}/*.log
 	rm ${PERF_TEST_DEC_PATH}/*.yuv ${PERF_TEST_DEC_PATH}/*.log
-	
 
 	umount ${PERF_TEST_ENC_PATH}
 	umount ${PERF_TEST_DEC_PATH}
