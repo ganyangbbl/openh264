@@ -1033,6 +1033,7 @@ int ProcessEncodingSvcWithConfig (ISVCEncoder* pPtrEnc, int argc, char** argv) {
     printf ("Width:		%d\nHeight:		%d\nFrames:		%d\nencode time:	%f sec\nFPS:		%f fps\n",
             sSvcParam.iPicWidth, sSvcParam.iPicHeight,
             iActualFrameEncodedCount, dElapsed, (iActualFrameEncodedCount * 1.0) / dElapsed);
+    fflush(stdout);
   }
 INSIDE_MEM_FREE:
   if (pFpBs) {
