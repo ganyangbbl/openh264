@@ -112,6 +112,19 @@ int32_t ParamValidation (SWelsSvcCodingParam* pCfg) {
     pCfg->fMaxFrameRate	= fMaxFrameRate;
   }
 
+  //bitrate setting validation
+  if (pCfg->iRCMode != RC_OFF_MODE){
+    int32_t  iTotalBitrate = 0;
+    for (i = 0; i < pCfg->iSpatialLayerNum; ++ i) {
+      SDLayerParam* fDlp = &pCfg->sDependencyLayers[i];
+      iTotalBitrate += fDlp->iSpatialBitrate;
+    }
+    if(iTotalBitrate > pCfg->iTargetBitrate){
+      WelsLog(NULL, WELS_LOG_ERROR,"Invalid setttings in bitrate. the sum of each layer bitrate(%) is larger than total bitrate setting(%d)\n",
+              iTotalBitrate,pCfg->iTargetBitrate);
+    }
+  }
+
   return ENC_RETURN_SUCCESS;
 }
 
@@ -2457,6 +2470,9 @@ void PreprocessSliceCoding (sWelsEncCtx* pCtx) {
       pFeatureSearchPreparation->iHighFreMbCount = 0;
 
       if (P_SLICE == pCtx->eSliceType) {
+        //MD related func pointers
+        pFuncList->pfInterFineMd = WelsMdInterFinePartitionVaaOnScreen;
+
         //calculate bFMESwitchFlag
         SVAAFrameInfoExt* pVaaExt		= static_cast<SVAAFrameInfoExt*> (pCtx->pVaa);
         const int32_t kiMbSize = pCurLayer->iMbHeight * pCurLayer->iMbWidth;

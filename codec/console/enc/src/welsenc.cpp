@@ -212,6 +212,8 @@ int ParseConfig (CReadConfig& cRdCfg, SSourcePicture* pSrcPic, SEncParamExt& pSv
         pSvcParam.iTemporalLayerNum	= atoi (strTag[1].c_str());
       } else if (strTag[0].compare ("IntraPeriod") == 0) {
         pSvcParam.uiIntraPeriod	= atoi (strTag[1].c_str());
+      } else if (strTag[0].compare ("MaxNalSize") == 0) {
+        pSvcParam.uiMaxNalSize = atoi (strTag[1].c_str());
       } else if (strTag[0].compare ("EnableSpsPpsIDAddition") == 0) {
         pSvcParam.bEnableSpsPpsIdAddition	= atoi (strTag[1].c_str()) ? true : false;
       } else if (strTag[0].compare ("EnableScalableSEI") == 0) {
@@ -326,6 +328,9 @@ int ParseCommandLine (int argc, char** argv, SEncParamExt& sParam) {
     else if (!strcmp (pCmd, "-iper") && (i < argc))
       sParam.uiIntraPeriod = atoi (argv[i++]);
 
+    else if (!strcmp (pCmd, "-nalsize") && (i < argc))
+      sParam.uiMaxNalSize = atoi (argv[i++]);
+
     else if (!strcmp (pCmd, "-spsid") && (i < argc))
       sParam.bEnableSpsPpsIdAddition = atoi (argv[i++]) ? true : false;
 
@@ -350,11 +355,23 @@ int ParseCommandLine (int argc, char** argv, SEncParamExt& sParam) {
     else if (!strcmp (pCmd, "-ltrper") && (i < argc))
       sParam.iLtrMarkPeriod = atoi (argv[i++]);
 
+    else if (!strcmp (pCmd, "-threadIdc") && (i < argc))
+      sParam.iMultipleThreadIdc= atoi (argv[i++]);
+
+    else if (!strcmp (pCmd, "-deblockIdc") && (i < argc))
+      sParam.iLoopFilterDisableIdc = atoi (argv[i++]);
+
+    else if (!strcmp (pCmd, "-alphaOffset") && (i < argc))
+      sParam.iLoopFilterAlphaC0Offset = atoi (argv[i++]);
+
+    else if (!strcmp (pCmd, "-betaOffset") && (i < argc))
+      sParam.iLoopFilterBetaOffset = atoi (argv[i++]);
+
     else if (!strcmp (pCmd, "-rcm") && (i < argc))
       sParam.iRCMode = (RC_MODES) atoi (argv[i++]);
 
     else if (!strcmp (pCmd, "-tarb") && (i < argc))
-      sParam.iTargetBitrate = atoi (argv[i++]);
+      sParam.iTargetBitrate = 1000*atoi (argv[i++]);
 
     else if (!strcmp (pCmd, "-ltarb") && (i + 1 < argc)) {
       int iLayer = atoi (argv[i++]);
@@ -388,6 +405,7 @@ void PrintHelp() {
   printf ("  -frms   Number of total frames to be encoded\n");
   printf ("  -gop    GOPSize - GOP size (1,2,4,8, default: 1)\n");
   printf ("  -iper   Intra period (default: -1) : must be a power of 2 of GOP size (or -1)\n");
+  printf ("  -nalsize the Maximum NAL size. which should be larger than the each layer slicesize when slice mode equals to SM_DYN_SLICE\n");
   printf ("  -spsid   Enable id adding in SPS/PPS per IDR \n");
   printf ("  -denois Control denoising  (default: 0)\n");
   printf ("  -scene  Control scene change detection (default: 0)\n");
@@ -395,6 +413,10 @@ void PrintHelp() {
   printf ("  -aq     Control adaptive quantization (default: 0)\n");
   printf ("  -ltr    Control long term reference (default: 0)\n");
   printf ("  -ltrnum Control the number of long term reference((1-4):screen LTR,(1-2):video LTR \n");
+  printf ("  -threadIdc 0: auto(dynamic imp. internal encoder); 1: multiple threads imp. disabled; > 1: count number of threads \n");
+  printf ("  -deblockIdc Loop filter idc (0: on, 1: off, \n");
+  printf ("  -alphaOffset AlphaOffset(-6..+6): valid range \n");
+  printf ("  -betaOffset BetaOffset (-6..+6): valid range\n");
   printf ("  -rc	  rate control mode: 0-quality mode; 1-bitrate mode; 2-bitrate limited mode; -1-rc off \n");
   printf ("  -tarb	  Overall target bitrate\n");
   printf ("  -numl   Number Of Layers: Must exist with layer_cfg file and the number of input layer_cfg file must equal to the value set by this command\n");
@@ -442,6 +464,9 @@ int ParseCommandLine (int argc, char** argv, SSourcePicture* pSrcPic, SEncParamE
     else if (!strcmp (pCommand, "-iper") && (n < argc))
       pSvcParam.uiIntraPeriod = atoi (argv[n++]);
 
+    else if (!strcmp (pCommand, "-nalsize") && (n < argc))
+      pSvcParam.uiMaxNalSize = atoi (argv[n++]);
+
     else if (!strcmp (pCommand, "-spsid") && (n < argc))
       pSvcParam.bEnableSpsPpsIdAddition = atoi (argv[n++]) ? true : false;
 
@@ -469,6 +494,18 @@ int ParseCommandLine (int argc, char** argv, SSourcePicture* pSrcPic, SEncParamE
     else if (!strcmp (pCommand, "-ltrper") && (n < argc))
       pSvcParam.iLtrMarkPeriod = atoi (argv[n++]);
 
+    else if (!strcmp (pCommand, "-threadIdc") && (n < argc))
+      pSvcParam.iMultipleThreadIdc= atoi (argv[n++]);
+
+    else if (!strcmp (pCommand, "-deblockIdc") && (n < argc))
+      pSvcParam.iLoopFilterDisableIdc = atoi (argv[n++]);
+
+    else if (!strcmp (pCommand, "-alphaOffset") && (n < argc))
+      pSvcParam.iLoopFilterAlphaC0Offset = atoi (argv[n++]);
+
+    else if (!strcmp (pCommand, "-betaOffset") && (n < argc))
+      pSvcParam.iLoopFilterBetaOffset = atoi (argv[n++]);
+
     else if (!strcmp (pCommand, "-rc") && (n < argc))
       pSvcParam.iRCMode = static_cast<RC_MODES> (atoi (argv[n++]));
 
@@ -476,7 +513,7 @@ int ParseCommandLine (int argc, char** argv, SSourcePicture* pSrcPic, SEncParamE
       g_LevelSetting = atoi (argv[n++]);
 
     else if (!strcmp (pCommand, "-tarb") && (n < argc))
-      pSvcParam.iTargetBitrate = atoi (argv[n++]);
+      pSvcParam.iTargetBitrate = 1000*atoi (argv[n++]);
 
     else if (!strcmp (pCommand, "-numl") && (n < argc)) {
       pSvcParam.iSpatialLayerNum = atoi (argv[n++]);
