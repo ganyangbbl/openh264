@@ -72,7 +72,7 @@ extern int EncMain(int argc, char **argv);
         NSArray * encArgv = [strLine componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         for (int j=0; j < [encArgv count]; j++) {
             NSString * strTemp = [encArgv objectAtIndex:j];
-            if (1 == j || 3== j || 8 == j) {
+            if (1 == j || 3== j || 10 == j) {
                 argv[j] = [[bundle pathForResource:strTemp ofType:nil] UTF8String];
             }
             else if (5 == j) {

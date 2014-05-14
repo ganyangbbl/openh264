@@ -165,7 +165,7 @@ class EncTestThread extends Thread {
                 argv[1] = mWorkPath+argv[1];
                 argv[3] = mWorkPath+argv[3];
                 argv[5] = mWorkPath+argv[5];
-                argv[8] = mWorkPath+argv[8];
+                argv[10] = mWorkPath+argv[10];
                 DoEncTest(argv.length, argv);
                 Log.i(TAG,"######Encoder Test "+i+" Completed########");
             }

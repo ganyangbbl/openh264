@@ -116,12 +116,12 @@ class GenerateCase:
                 height = int(matchResult_resolution.groups()[1])
                 bsFilename = bsFilename_Prefix + sequence[seq_index].replace(".yuv",".264")
                 yuvFilename = yuvFilename_Prefix + sequence[seq_index]
-                command_seq = "dummy %s -org %s -bf %s -numl 1 %s -sw %d -sh %d -dw 0 %d -dh 0 %d" \
+                command_seq = "dummy %s -org %s -bf %s -numl 1 -lconfig 0 %s -sw %d -sh %d -dw 0 %d -dh 0 %d" \
                           %(self.enccfgFilename,sequence[seq_index],bsFilename, \
                             self.layercfgFilename,width,height,width,height)
                 count = 0
                 for bit_index in range(0,len(bitrate)):
-                    command_bit = command_seq+" ltarb 0 %s"%(bitrate[bit_index])
+                    command_bit = command_seq+" -ltarb 0 %s"%(bitrate[bit_index])
                     enc_command = command_bit+"\n"
                     enc_command = enc_command.replace(".264","_%d.264"%(count))
                     dec_command = "dummy %s %s\n"%(bsFilename,yuvFilename)
