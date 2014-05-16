@@ -62,7 +62,7 @@ else
 	echo "Find git tool"
 fi
 
-git checkout android-test
+git checkout perf-test
 git pull upstream master
 
 ###############################################################################
