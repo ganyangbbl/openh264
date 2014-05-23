@@ -971,6 +971,7 @@ void WelsMdIntraMb (sWelsEncCtx* pEncCtx, SWelsMD* pWelsMd, SMB* pCurMb, SMbCach
 }
 
 static inline void InitMe (const SWelsMD& sWelsMd, const int32_t iBlockSize, uint8_t* pEnc, uint8_t* pRef,
+                           SScreenBlockFeatureStorage* pRefFeatureStorage,
                            SWelsME& sWelsMe) {
   sWelsMe.iCurMeBlockPixX = sWelsMd.iMbPixX;
   sWelsMe.iCurMeBlockPixY = sWelsMd.iMbPixY;
@@ -979,6 +980,8 @@ static inline void InitMe (const SWelsMD& sWelsMd, const int32_t iBlockSize, uin
 
   sWelsMe.pEncMb = pEnc;
   sWelsMe.pRefMb = sWelsMe.pColoRefMb = pRef;
+
+  sWelsMe.pRefFeatureStorage = pRefFeatureStorage;
 }
 
 int32_t WelsMdP16x16 (SWelsFuncPtrList* pFunc, SDqLayer* pCurLayer, SWelsMD* pWelsMd, SSlice* pSlice, SMB* pCurMb) {
@@ -988,6 +991,7 @@ int32_t WelsMdP16x16 (SWelsFuncPtrList* pFunc, SDqLayer* pCurLayer, SWelsMD* pWe
   const int32_t kiMbWidth	= pCurLayer->iMbWidth;	// for assign once
   const int32_t kiMbHeight	= pCurLayer->iMbHeight;
   InitMe (*pWelsMd, BLOCK_16x16, pMbCache->SPicData.pEncMb[0], pMbCache->SPicData.pRefMb[0],
+          pCurLayer->pRefPic->pScreenBlockFeatureStorage,
           *pMe16x16);
   //not putting the line below into InitMe to avoid judging mode in InitMe
   pMe16x16->uSadPredISatd.uiSadPred = pWelsMd->iSadPredMb;
@@ -1038,6 +1042,7 @@ int32_t WelsMdP16x8 (SWelsFuncPtrList* pFunc, SDqLayer* pCurDqLayer, SWelsMD* pW
     InitMe (*pWelsMd, BLOCK_16x8,
             pMbCache->SPicData.pEncMb[0] + (iPixelY * iStrideEnc),
             pMbCache->SPicData.pRefMb[0] + (iPixelY * iStrideRef),
+            pCurDqLayer->pRefPic->pScreenBlockFeatureStorage,
             *sMe16x8);
     //not putting the lines below into InitMe to avoid judging mode in InitMe
     sMe16x8->iCurMeBlockPixY = pWelsMd->iMbPixY + iPixelY;
@@ -1065,6 +1070,7 @@ int32_t WelsMdP8x16 (SWelsFuncPtrList* pFunc, SDqLayer* pCurLayer, SWelsMD* pWel
     InitMe (*pWelsMd, BLOCK_8x16,
             pMbCache->SPicData.pEncMb[0] + iPixelX,
             pMbCache->SPicData.pRefMb[0] + iPixelX,
+            pCurLayer->pRefPic->pScreenBlockFeatureStorage,
             *sMe8x16);
     //not putting the lines below into InitMe to avoid judging mode in InitMe
     sMe8x16->iCurMeBlockPixX = pWelsMd->iMbPixX + iPixelX;
@@ -1100,6 +1106,7 @@ int32_t WelsMdP8x8 (SWelsFuncPtrList* pFunc, SDqLayer* pCurDqLayer, SWelsMD* pWe
     InitMe (*pWelsMd, BLOCK_8x8,
             pMbCache->SPicData.pEncMb[0] + iStrideEnc,
             pMbCache->SPicData.pRefMb[0] + iStrideRef,
+            pCurDqLayer->pRefPic->pScreenBlockFeatureStorage,
             *sMe8x8);
     //not putting these three lines below into InitMe to avoid judging mode in InitMe
     sMe8x8->iCurMeBlockPixX = pWelsMd->iMbPixX + iPixelX;
@@ -1879,9 +1886,6 @@ static inline void MergeSub16Me (const SWelsME& sSrcMe0, const SWelsME& sSrcMe1,
 }
 static inline bool IsSameMv (const SMVUnitXY& sMv0, const SMVUnitXY& sMv1) {
   return ((sMv0.iMvX == sMv1.iMvX) && (sMv0.iMvY == sMv1.iMvY));
-}
-static inline int32_t Mvd (const SMVUnitXY& sMv, const SMVUnitXY& sMvp) {
-  return (WELS_ABS (sMv.iMvX - sMvp.iMvX) + WELS_ABS (sMv.iMvY - sMvp.iMvY));
 }
 bool TryModeMerge (SMbCache* pMbCache, SWelsMD* pWelsMd, SMB* pCurMb) {
   SWelsME* pMe8x8 = & (pWelsMd->sMe.sMe8x8[0]);
