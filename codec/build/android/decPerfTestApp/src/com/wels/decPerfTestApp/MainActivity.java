@@ -126,7 +126,7 @@ public class MainActivity extends Activity {
     private  static final String TAG = "welsdec";
     static {
         try {
-            System.loadLibrary("wels");
+            System.loadLibrary("openh264");
             System.loadLibrary("stlport_shared");
             System.loadLibrary("welsdecdemo");
             Log.v(TAG,"Load libwelsdecdemo.so successfully");
