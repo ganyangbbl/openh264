@@ -62,8 +62,7 @@ void RcInitLayerMemory (SWelsSvcRc* pWelsSvcRc, CMemoryAlign* pMA, const int32_t
   const int32_t kiGomSize				= pWelsSvcRc->iGomSize;
   const int32_t kiGomSizeD			= kiGomSize * sizeof (double);
   const int32_t kiGomSizeI			= kiGomSize * sizeof (int32_t);
-  const int32_t kiLayerRcSize			= kiGomSizeD + (kiGomSizeI * 3) + sizeof (SRCSlicing) * kiSliceNum + sizeof (
-                                      SRCTemporal) * kiMaxTl;
+  const int32_t kiLayerRcSize			= kiGomSizeD + (kiGomSizeI * 3) +  sizeof (SRCTemporal) * kiMaxTl;
   uint8_t* pBaseMem					= (uint8_t*)pMA->WelsMalloc (kiLayerRcSize, "rc_layer_memory");
 
   if (NULL == pBaseMem)
@@ -77,19 +76,22 @@ void RcInitLayerMemory (SWelsSvcRc* pWelsSvcRc, CMemoryAlign* pMA, const int32_t
   pBaseMem += kiGomSizeI;
   pWelsSvcRc->pGomCost					= (int32_t*)pBaseMem;
   pBaseMem += kiGomSizeI;
-  pWelsSvcRc->pSlicingOverRc			= (SRCSlicing*)pBaseMem;
-  pBaseMem += sizeof (SRCSlicing) * kiSliceNum;
   pWelsSvcRc->pTemporalOverRc			= (SRCTemporal*)pBaseMem;
+
+  pWelsSvcRc->pSlicingOverRc			= (SRCSlicing*)pMA->WelsMalloc(sizeof (SRCSlicing) * kiSliceNum, "SlicingOverRC");
 }
 
 void RcFreeLayerMemory (SWelsSvcRc* pWelsSvcRc, CMemoryAlign* pMA) {
+  if (pWelsSvcRc != NULL && pWelsSvcRc->pSlicingOverRc != NULL) {
+    pMA->WelsFree (pWelsSvcRc->pSlicingOverRc, "SlicingOverRC");
+    pWelsSvcRc->pSlicingOverRc = NULL;
+  }
   if (pWelsSvcRc != NULL && pWelsSvcRc->pGomComplexity != NULL) {
     pMA->WelsFree (pWelsSvcRc->pGomComplexity, "rc_layer_memory");
     pWelsSvcRc->pGomComplexity			= NULL;
     pWelsSvcRc->pGomForegroundBlockNum	= NULL;
     pWelsSvcRc->pCurrentFrameGomSad	= NULL;
     pWelsSvcRc->pGomCost				= NULL;
-    pWelsSvcRc->pSlicingOverRc			= NULL;
     pWelsSvcRc->pTemporalOverRc		= NULL;
   }
 }
@@ -560,14 +562,15 @@ void RcCalculateMbQp (sWelsEncCtx* pEncCtx, SMB* pCurMb, const int32_t kiSliceId
   SWelsSvcRc* pWelsSvcRc = &pEncCtx->pWelsSvcRc[pEncCtx->uiDependencyId];
   SRCSlicing* pSOverRc		= &pWelsSvcRc->pSlicingOverRc[kiSliceId];
   int32_t iLumaQp			= pSOverRc->iCalculatedQpSlice;
-
+  SDqLayer* pCurLayer				= pEncCtx->pCurDqLayer;
+  const uint8_t kuiChromaQpIndexOffset = pCurLayer->sLayerInfo.pPpsP->uiChromaQpIndexOffset;
 #ifndef _NOT_USE_AQ_FOR_TEST_
   if (pEncCtx->pSvcParam->bEnableAdaptiveQuant) {
     iLumaQp   = (int8_t)WELS_CLIP3 (iLumaQp +
                                     pEncCtx->pVaa->sAdaptiveQuantParam.pMotionTextureIndexToDeltaQp[pCurMb->iMbXY], pWelsSvcRc->iMinQp, 51);
   }
 #endif
-  pCurMb->uiChromaQp	= g_kuiChromaQpTable[iLumaQp];
+  pCurMb->uiChromaQp	= g_kuiChromaQpTable[CLIP3_QP_0_51 (iLumaQp + kuiChromaQpIndexOffset)];
   pCurMb->uiLumaQp		= iLumaQp;
 }
 
@@ -871,12 +874,16 @@ void WelsRcMbInitGom (void* pCtx, SMB* pCurMb, SSlice* pSlice) {
   const int32_t kiSliceId			= pSlice->uiSliceIdx;
   SRCSlicing* pSOverRc				= &pWelsSvcRc->pSlicingOverRc[kiSliceId];
   SBitStringAux* bs				= pSlice->pSliceBsa;
-
+  SDqLayer* pCurLayer				= pEncCtx->pCurDqLayer;
+  const uint8_t kuiChromaQpIndexOffset = pCurLayer->sLayerInfo.pPpsP->uiChromaQpIndexOffset;
 
   pSOverRc->iBsPosSlice = BsGetBitsPos (bs);
 
-  if (pEncCtx->eSliceType == I_SLICE)
+  if (pEncCtx->eSliceType == I_SLICE) {
+    pCurMb->uiLumaQp   = pEncCtx->iGlobalQp;
+    pCurMb->uiChromaQp = g_kuiChromaQpTable[CLIP3_QP_0_51 (pCurMb->uiLumaQp + kuiChromaQpIndexOffset)];
     return;
+  }
   //calculate gom qp and target bits at the beginning of gom
   if (0 == (pCurMb->iMbXY % pWelsSvcRc->iNumberMbGom)) {
     if (pCurMb->iMbXY != pSOverRc->iStartMbSlice) {
@@ -913,7 +920,6 @@ void  WelsRcPictureInitDisable (void* pCtx) {
   sWelsEncCtx* pEncCtx = (sWelsEncCtx*)pCtx;
   SWelsSvcRc* pWelsSvcRc = &pEncCtx->pWelsSvcRc[pEncCtx->uiDependencyId];
   SDLayerParam* pDLayerParam		= &pEncCtx->pSvcParam->sDependencyLayers[pEncCtx->uiDependencyId];
-
   const int32_t kiQp = pDLayerParam->iDLayerQp;
 
   pEncCtx->iGlobalQp	= RcCalculateCascadingQp (pEncCtx, kiQp);
@@ -922,7 +928,7 @@ void  WelsRcPictureInitDisable (void* pCtx) {
     pEncCtx->iGlobalQp = WELS_CLIP3 (WELS_ROUND (pEncCtx->iGlobalQp -
                                      pEncCtx->pVaa->sAdaptiveQuantParam.dAverMotionTextureIndexToDeltaQp), GOM_MIN_QP_MODE, GOM_MAX_QP_MODE);
   } else {
-    pEncCtx->iGlobalQp = WELS_CLIP3 (pEncCtx->iGlobalQp, FIX_MIN_QP_MODE, FIX_MAX_QP_MODE);
+    pEncCtx->iGlobalQp = WELS_CLIP3 (pEncCtx->iGlobalQp, 0, 51);
   }
 
   pWelsSvcRc->iAverageFrameQp = pEncCtx->iGlobalQp;
@@ -935,13 +941,17 @@ void  WelsRcMbInitDisable (void* pCtx, SMB* pCurMb, SSlice* pSlice) {
   sWelsEncCtx* pEncCtx = (sWelsEncCtx*)pCtx;
   int32_t iLumaQp					= pEncCtx->iGlobalQp;
 
+  SDqLayer* pCurLayer				= pEncCtx->pCurDqLayer;
+  const uint8_t kuiChromaQpIndexOffset = pCurLayer->sLayerInfo.pPpsP->uiChromaQpIndexOffset;
+
+
   if (pEncCtx->pSvcParam->bEnableAdaptiveQuant && (pEncCtx->eSliceType == P_SLICE)) {
     iLumaQp   = (int8_t)WELS_CLIP3 (iLumaQp +
                                     pEncCtx->pVaa->sAdaptiveQuantParam.pMotionTextureIndexToDeltaQp[pCurMb->iMbXY], GOM_MIN_QP_MODE, 51);
   } else {
-    iLumaQp = WELS_CLIP3 (iLumaQp, FIX_MIN_QP_MODE, FIX_MAX_QP_MODE);
+    iLumaQp = WELS_CLIP3 (iLumaQp, 0, 51);
   }
-  pCurMb->uiChromaQp = g_kuiChromaQpTable[iLumaQp];
+  pCurMb->uiChromaQp = g_kuiChromaQpTable[CLIP3_QP_0_51 (iLumaQp + kuiChromaQpIndexOffset)];
   pCurMb->uiLumaQp = iLumaQp;
 }
 

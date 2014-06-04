@@ -53,6 +53,7 @@
 #include "as264_common.h" // for LONG_TERM_REF macro,can be delete if not need this macro
 #include "crt_util_safe_x.h"
 #include "mb_cache.h"
+#include "expand_pic.h"
 
 namespace WelsDec {
 
@@ -139,7 +140,7 @@ typedef struct TagDeblockingFunc {
   PChromaDeblockingEQ4Func  pfChromaDeblockingEQ4Hor;
 } SDeblockingFunc, *PDeblockingFunc;
 
-typedef void (*PWelsNonZeroCountFunc) (int16_t* pBlock, int8_t* pNonZeroCount);
+typedef void (*PWelsNonZeroCountFunc) (int8_t* pNonZeroCount);
 
 typedef  struct  TagBlockFunc {
   PWelsNonZeroCountFunc		pWelsSetNonZeroCountFunc;
@@ -150,11 +151,6 @@ typedef void (*PWelsFillNeighborMbInfoIntra4x4Func) (PNeighAvail pNeighAvail, ui
 typedef int32_t (*PWelsParseIntra4x4ModeFunc) (PNeighAvail pNeighAvail, int8_t* pIntraPredMode, PBitStringAux pBs,
     PDqLayer pCurDqLayer);
 typedef int32_t (*PWelsParseIntra16x16ModeFunc) (PNeighAvail pNeighAvail, PBitStringAux pBs, PDqLayer pCurDqLayer);
-
-typedef struct TagExpandPicFunc {
-  PExpandPictureFunc pExpandLumaPicture;
-  PExpandPictureFunc pExpandChromaPicture[2];
-} SExpandPicFunc;
 
 enum {
   OVERWRITE_NONE = 0,
@@ -322,11 +318,9 @@ typedef struct TagWelsDecoderContext {
   //trace handle
   void*      pTraceHandle;
 
-#ifdef NO_WAITING_AU
   //Save the last nal header info
   SNalUnitHeaderExt sLastNalHdrExt;
   SSliceHeader      sLastSliceHeader;
-#endif
 
 } SWelsDecoderContext, *PWelsDecoderContext;
 
