@@ -94,6 +94,13 @@ typedef struct LayerpEncCtx_s {
   SSliceConfig	sSliceCfg;
 } SLayerPEncCtx;
 
+typedef struct tagFilesSet {
+  string strBsFile;
+  string strSeqFile;    // for cmd lines
+  string strLayerCfgFile[MAX_DEPENDENCY_LAYER];
+  char   sRecFileName[MAX_DEPENDENCY_LAYER][MAX_FNAME_LEN];
+} SFilesSet;
+
 
 
 /* Ctrl-C handler */
@@ -116,7 +123,7 @@ int ParseLayerConfig (CReadConfig& cRdLayerCfg, const int iLayer, SEncParamExt& 
 
   string strTag[4];
   string str_ ("SlicesAssign");
-  const int kiSize = str_.size();
+  const int kiSize = (int)str_.size();
 
   while (!cRdLayerCfg.EndOfFile()) {
     long iLayerRd = cRdLayerCfg.ReadLine (&strTag[0]);
@@ -130,7 +137,7 @@ int ParseLayerConfig (CReadConfig& cRdLayerCfg, const int iLayer, SEncParamExt& 
       } else if (strTag[0].compare ("FrameRateOut") == 0) {
         pDLayer->fFrameRate = (float)atof (strTag[1].c_str());
       } else if (strTag[0].compare ("ReconFile") == 0) {
-        const unsigned int kiLen = strTag[1].length();
+        const unsigned int kiLen = (unsigned int)strTag[1].length();
         if (kiLen >= sizeof (sFileSet.sRecFileName[iLayer]))
           return -1;
         sFileSet.sRecFileName[iLayer][kiLen] = '\0';
@@ -152,6 +159,19 @@ int ParseLayerConfig (CReadConfig& cRdLayerCfg, const int iLayer, SEncParamExt& 
             return -1;
           }
           iLeftTargetBitrate -= pDLayer->iSpatialBitrate;
+        }
+      } else if (strTag[0].compare ("MaxSpatialBitrate") == 0) {
+        pDLayer->iMaxSpatialBitrate = 1000 * atoi (strTag[1].c_str());
+        if (pSvcParam.iRCMode != RC_OFF_MODE) {
+          if (pDLayer->iMaxSpatialBitrate <= 0) {
+            fprintf (stderr, "Invalid max spatial bitrate(%d) in dependency layer #%d.\n", pDLayer->iMaxSpatialBitrate, iLayer);
+            return -1;
+          }
+          if (pDLayer->iMaxSpatialBitrate < pDLayer->iSpatialBitrate) {
+            fprintf (stderr, "Invalid max spatial(#%d) bitrate(%d) setting::: < layerBitrate(%d)!\n", iLayer,
+                     pDLayer->iMaxSpatialBitrate, pDLayer->iSpatialBitrate);
+            return -1;
+          }
         }
       } else if (strTag[0].compare ("InitialQP") == 0) {
         sLayerCtx.iDLayerQp	= atoi (strTag[1].c_str());
@@ -253,6 +273,12 @@ int ParseConfig (CReadConfig& cRdCfg, SSourcePicture* pSrcPic, SEncParamExt& pSv
           fprintf (stderr, "Invalid target bitrate setting due to RC enabled. Check TargetBitrate field please!\n");
           return 1;
         }
+      } else if (strTag[0].compare ("MaxOverallBitrate") == 0) {
+        pSvcParam.iMaxBitrate	= 1000 * atoi (strTag[1].c_str());
+        if ((pSvcParam.iRCMode != RC_OFF_MODE) && pSvcParam.iMaxBitrate <= 0) {
+          fprintf (stderr, "Invalid max overall bitrate setting due to RC enabled. Check MaxOverallBitrate field please!\n");
+          return 1;
+        }
       } else if (strTag[0].compare ("EnableDenoise") == 0) {
         pSvcParam.bEnableDenoise	= atoi (strTag[1].c_str()) ? true : false;
       } else if (strTag[0].compare ("EnableSceneChangeDetection") == 0) {
@@ -339,6 +365,7 @@ void PrintHelp() {
   printf ("  -betaOffset BetaOffset (-6..+6): valid range\n");
   printf ("  -rc	  rate control mode: 0-quality mode; 1-bitrate mode; 2-bitrate limited mode; -1-rc off \n");
   printf ("  -tarb	  Overall target bitrate\n");
+  printf ("  -maxbrTotal  Overall max bitrate\n");
   printf ("  -numl   Number Of Layers: Must exist with layer_cfg file and the number of input layer_cfg file must equal to the value set by this command\n");
   printf ("  The options below are layer-based: (need to be set with layer id)\n");
   printf ("  -lconfig (Layer) (spatial layer configure file)\n");
@@ -348,6 +375,7 @@ void PrintHelp() {
   printf ("  -frout  	(Layer) (output frame rate)\n");
   printf ("  -lqp		(Layer) (base quality layer qp : must work with -ldeltaqp or -lqparr)\n");
   printf ("  -ltarb	    (Layer) (spatial layer target bitrate)\n");
+  printf ("  -lmaxb     (Layer) (spatial layer max bitrate)\n");
   printf ("  -slcmd   (Layer) (spatial layer slice mode): pls refer to layerX.cfg for details ( -slcnum: set target slice num; -slcsize: set target slice size constraint ) \n");
   printf ("  -trace   (Level)\n");
   printf ("\n");
@@ -416,7 +444,7 @@ int ParseCommandLine (int argc, char** argv, SSourcePicture* pSrcPic, SEncParamE
       pSvcParam.iLtrMarkPeriod = atoi (argv[n++]);
 
     else if (!strcmp (pCommand, "-threadIdc") && (n < argc))
-      pSvcParam.iMultipleThreadIdc= atoi (argv[n++]);
+      pSvcParam.iMultipleThreadIdc = atoi (argv[n++]);
 
     else if (!strcmp (pCommand, "-deblockIdc") && (n < argc))
       pSvcParam.iLoopFilterDisableIdc = atoi (argv[n++]);
@@ -434,12 +462,14 @@ int ParseCommandLine (int argc, char** argv, SSourcePicture* pSrcPic, SEncParamE
       g_LevelSetting = atoi (argv[n++]);
 
     else if (!strcmp (pCommand, "-tarb") && (n < argc))
-      pSvcParam.iTargetBitrate = 1000*atoi (argv[n++]);
+      pSvcParam.iTargetBitrate = 1000 * atoi (argv[n++]);
+
+    else if (!strcmp (pCommand, "-maxbrTotal") && (n < argc))
+      pSvcParam.iMaxBitrate = 1000 * atoi (argv[n++]);
 
     else if (!strcmp (pCommand, "-numl") && (n < argc)) {
       pSvcParam.iSpatialLayerNum = atoi (argv[n++]);
-    }
-    else if (!strcmp (pCommand, "-lconfig") && (n < argc)) {
+    } else if (!strcmp (pCommand, "-lconfig") && (n < argc)) {
       unsigned int	iLayer = atoi (argv[n++]);
       sFileSet.strLayerCfgFile[iLayer].assign (argv[n++]);
       CReadConfig cRdLayerCfg (sFileSet.strLayerCfgFile[iLayer]);
@@ -448,7 +478,7 @@ int ParseCommandLine (int argc, char** argv, SSourcePicture* pSrcPic, SEncParamE
       }
     } else if (!strcmp (pCommand, "-drec") && (n + 1 < argc)) {
       unsigned int	iLayer = atoi (argv[n++]);
-      const unsigned int iLen = strlen (argv[n]);
+      const unsigned int iLen = (int) strlen (argv[n]);
       if (iLen >= sizeof (sFileSet.sRecFileName[iLayer]))
         return 1;
       sFileSet.sRecFileName[iLayer][iLen] = '\0';
@@ -482,6 +512,12 @@ int ParseCommandLine (int argc, char** argv, SSourcePicture* pSrcPic, SEncParamE
       unsigned int	iLayer = atoi (argv[n++]);
       SSpatialLayerConfig* pDLayer = &pSvcParam.sSpatialLayers[iLayer];
       pDLayer->iSpatialBitrate	= 1000 * atoi (argv[n++]);
+    }
+
+    else if (!strcmp (pCommand, "-lmaxb") && (n + 1 < argc)) {
+      unsigned int	iLayer = atoi (argv[n++]);
+      SSpatialLayerConfig* pDLayer = &pSvcParam.sSpatialLayers[iLayer];
+      pDLayer->iMaxSpatialBitrate	= 1000 * atoi (argv[n++]);
     }
 
     else if (!strcmp (pCommand, "-slcmd") && (n + 1 < argc)) {
@@ -537,6 +573,7 @@ int FillSpecificParameters (SEncParamExt& sParam) {
   sParam.iPicWidth		= 1280;			// width of picture in samples
   sParam.iPicHeight	= 720;			// height of picture in samples
   sParam.iTargetBitrate = 2500000;		// target bitrate desired
+  sParam.iMaxBitrate    = MAX_BIT_RATE;
   sParam.iRCMode       = RC_QUALITY_MODE;       //  rc mode control
   sParam.iTemporalLayerNum = 3;	// layer number at temporal level
   sParam.iSpatialLayerNum	= 4;	// layer number at spatial level
@@ -546,7 +583,6 @@ int FillSpecificParameters (SEncParamExt& sParam) {
   sParam.bEnableFrameSkip           = 1; // frame skipping
   sParam.bEnableLongTermReference  = 0; // long term reference control
   sParam.iLtrMarkPeriod = 30;
-
   sParam.iInputCsp			= videoFormatI420;			// color space of input sequence
   sParam.uiIntraPeriod		= 320;		// period of Intra frame
   sParam.bEnableSpsPpsIdAddition = 1;
@@ -558,6 +594,7 @@ int FillSpecificParameters (SEncParamExt& sParam) {
   sParam.sSpatialLayers[iIndexLayer].iVideoHeight	= 90;
   sParam.sSpatialLayers[iIndexLayer].fFrameRate	= 7.5f;
   sParam.sSpatialLayers[iIndexLayer].iSpatialBitrate		= 64000;
+  sParam.sSpatialLayers[iIndexLayer].iMaxSpatialBitrate     = MAX_BIT_RATE;
   sParam.sSpatialLayers[iIndexLayer].sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
 
   ++ iIndexLayer;
@@ -566,6 +603,7 @@ int FillSpecificParameters (SEncParamExt& sParam) {
   sParam.sSpatialLayers[iIndexLayer].iVideoHeight	= 180;
   sParam.sSpatialLayers[iIndexLayer].fFrameRate	= 15.0f;
   sParam.sSpatialLayers[iIndexLayer].iSpatialBitrate		= 160000;
+  sParam.sSpatialLayers[iIndexLayer].iMaxSpatialBitrate     = MAX_BIT_RATE;
   sParam.sSpatialLayers[iIndexLayer].sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
 
   ++ iIndexLayer;
@@ -574,6 +612,7 @@ int FillSpecificParameters (SEncParamExt& sParam) {
   sParam.sSpatialLayers[iIndexLayer].iVideoHeight	= 360;
   sParam.sSpatialLayers[iIndexLayer].fFrameRate	= 30.0f;
   sParam.sSpatialLayers[iIndexLayer].iSpatialBitrate		= 512000;
+  sParam.sSpatialLayers[iIndexLayer].iMaxSpatialBitrate     = MAX_BIT_RATE;
   sParam.sSpatialLayers[iIndexLayer].sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
   sParam.sSpatialLayers[iIndexLayer].sSliceCfg.sSliceArgument.uiSliceNum = 1;
 
@@ -583,6 +622,7 @@ int FillSpecificParameters (SEncParamExt& sParam) {
   sParam.sSpatialLayers[iIndexLayer].iVideoHeight	= 720;
   sParam.sSpatialLayers[iIndexLayer].fFrameRate	= 30.0f;
   sParam.sSpatialLayers[iIndexLayer].iSpatialBitrate		= 1500000;
+  sParam.sSpatialLayers[iIndexLayer].iMaxSpatialBitrate     = MAX_BIT_RATE;
   sParam.sSpatialLayers[iIndexLayer].sSliceCfg.uiSliceMode = SM_SINGLE_SLICE;
   sParam.sSpatialLayers[iIndexLayer].sSliceCfg.sSliceArgument.uiSliceNum = 1;
 
@@ -596,7 +636,7 @@ int FillSpecificParameters (SEncParamExt& sParam) {
   return 0;
 }
 
-int ProcessEncoding(ISVCEncoder* pPtrEnc, int argc, char** argv,bool bConfigFile) {
+int ProcessEncoding (ISVCEncoder* pPtrEnc, int argc, char** argv, bool bConfigFile) {
   int iRet				= 0;
 
   if (pPtrEnc == NULL)
@@ -643,7 +683,7 @@ int ProcessEncoding(ISVCEncoder* pPtrEnc, int argc, char** argv,bool bConfigFile
   pSrcPic->uiTimeStamp = 0;
 
   // if configure file exit, reading configure file firstly
-  if(bConfigFile){
+  if (bConfigFile) {
     iParsedNum = 2;
     cRdCfg.Openf (argv[1]);
     if (!cRdCfg.ExistFile()) {
@@ -771,7 +811,7 @@ int ProcessEncoding(ISVCEncoder* pPtrEnc, int argc, char** argv,bool bConfigFile
     iTotal += WelsTime() - iStart;
 
     // fixed issue in case dismatch source picture introduced by frame skipped, 1/12/2010
-    if (videoFrameTypeSkip == sFbi.eOutputFrameType) {
+    if (videoFrameTypeSkip == sFbi.eFrameType) {
       continue;
     }
 
@@ -889,8 +929,8 @@ void LockToSingleCore() {
   return ;
 }
 
-long CreateSVCEncHandle (ISVCEncoder** ppEncoder) {
-  long ret = 0;
+int32_t CreateSVCEncHandle (ISVCEncoder** ppEncoder) {
+  int32_t ret = 0;
   ret = WelsCreateSVCEncoder (ppEncoder);
   return ret;
 }
@@ -936,7 +976,7 @@ int main (int argc, char** argv)
   } else {
     if (!strstr (argv[1], ".cfg")) { // check configuration type (like .cfg?)
       if (argc > 2) {
-        iRet = ProcessEncoding(pSVCEncoder, argc, argv,false);
+        iRet = ProcessEncoding (pSVCEncoder, argc, argv, false);
         if (iRet != 0)
           goto exit;
       } else if (argc == 2 && ! strcmp (argv[1], "-h"))
@@ -946,7 +986,7 @@ int main (int argc, char** argv)
         goto exit;
       }
     } else {
-      iRet = ProcessEncoding(pSVCEncoder, argc, argv,true);
+      iRet = ProcessEncoding (pSVCEncoder, argc, argv, true);
       if (iRet > 0)
         goto exit;
     }

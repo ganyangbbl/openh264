@@ -2,14 +2,14 @@
 #include "utils/HashFunctions.h"
 #include "BaseEncoderTest.h"
 
-static void UpdateHashFromFrame(const SFrameBSInfo& info, SHA1Context* ctx) {
+static void UpdateHashFromFrame (const SFrameBSInfo& info, SHA1Context* ctx) {
   for (int i = 0; i < info.iLayerNum; ++i) {
     const SLayerBSInfo& layerInfo = info.sLayerInfo[i];
     int layerSize = 0;
     for (int j = 0; j < layerInfo.iNalCount; ++j) {
       layerSize += layerInfo.pNalLengthInByte[j];
     }
-    SHA1Input(ctx, layerInfo.pBsBuf, layerSize);
+    SHA1Input (ctx, layerInfo.pBsBuf, layerSize);
   }
 }
 
@@ -23,7 +23,7 @@ class EncoderInitTest : public ::testing::Test, public BaseEncoderTest {
   }
 };
 
-TEST_F(EncoderInitTest, JustInit) {}
+TEST_F (EncoderInitTest, JustInit) {}
 
 struct EncodeFileParam {
   const char* fileName;
@@ -38,80 +38,80 @@ struct EncodeFileParam {
 };
 
 class EncoderOutputTest : public ::testing::WithParamInterface<EncodeFileParam>,
-    public EncoderInitTest , public BaseEncoderTest::Callback {
+  public EncoderInitTest , public BaseEncoderTest::Callback {
  public:
   virtual void SetUp() {
     EncoderInitTest::SetUp();
     if (HasFatalFailure()) {
       return;
     }
-    SHA1Reset(&ctx_);
+    SHA1Reset (&ctx_);
   }
-  virtual void onEncodeFrame(const SFrameBSInfo& frameInfo) {
-    UpdateHashFromFrame(frameInfo, &ctx_);
+  virtual void onEncodeFrame (const SFrameBSInfo& frameInfo) {
+    UpdateHashFromFrame (frameInfo, &ctx_);
   }
  protected:
   SHA1Context ctx_;
 };
 
 
-TEST_P(EncoderOutputTest, CompareOutput) {
+TEST_P (EncoderOutputTest, CompareOutput) {
   EncodeFileParam p = GetParam();
-  EncodeFile(p.fileName, p.usageType ,p.width, p.height, p.frameRate, p.slices, p.denoise, p.layers, this);
+  EncodeFile (p.fileName, p.usageType , p.width, p.height, p.frameRate, p.slices, p.denoise, p.layers, this);
 
   //will remove this after screen content algorithms are ready,
   //because the bitstream output will vary when the different algorithms are added.
-  if(p.usageType == SCREEN_CONTENT_REAL_TIME)
+  if (p.usageType == SCREEN_CONTENT_REAL_TIME)
     return;
   unsigned char digest[SHA_DIGEST_LENGTH];
-  SHA1Result(&ctx_, digest);
+  SHA1Result (&ctx_, digest);
   if (!HasFatalFailure()) {
-    CompareHash(digest, p.hashStr);
+    CompareHash (digest, p.hashStr);
   }
 }
 
 static const EncodeFileParam kFileParamArray[] = {
   {
-      "res/CiscoVT2people_320x192_12fps.yuv",
-      "5fa8c8551133b7d7586f498121028d0e05a28e1d", CAMERA_VIDEO_REAL_TIME, 320, 192, 12.0f, SM_SINGLE_SLICE, false, 1
+    "res/CiscoVT2people_320x192_12fps.yuv",
+    "0a36b75e423fc6b49f6adf7eee12c039a096f538", CAMERA_VIDEO_REAL_TIME, 320, 192, 12.0f, SM_SINGLE_SLICE, false, 1
   },
   {
-      "res/CiscoVT2people_160x96_6fps.yuv",
-      "c619645a7d46f8fade40d2b0e5ae01adc2e5c3ff", CAMERA_VIDEO_REAL_TIME, 160, 96, 6.0f, SM_SINGLE_SLICE, false, 1
+    "res/CiscoVT2people_160x96_6fps.yuv",
+    "73981e6ea5b62f7338212c538a7cc755e7c9c030", CAMERA_VIDEO_REAL_TIME, 160, 96, 6.0f, SM_SINGLE_SLICE, false, 1
   },
   {
-      "res/Static_152_100.yuv",
-      "68cde1b5f790213baab1a10d4a19a3618c138405", CAMERA_VIDEO_REAL_TIME, 152, 100, 6.0f, SM_SINGLE_SLICE, false, 1
+    "res/Static_152_100.yuv",
+    "02bbff550ee0630e44e46e14dc459d3686f2a360", CAMERA_VIDEO_REAL_TIME, 152, 100, 6.0f, SM_SINGLE_SLICE, false, 1
   },
   {
-      "res/CiscoVT2people_320x192_12fps.yuv",
-      "d0d0a087451c2813e9b0fd61bc5b25a4e82519ac", CAMERA_VIDEO_REAL_TIME, 320, 192, 12.0f, SM_ROWMB_SLICE, false, 1 // One slice per MB row
+    "res/CiscoVT2people_320x192_12fps.yuv",
+    "c8b759bcec7ffa048f1d3ded594b8815bed0aead", CAMERA_VIDEO_REAL_TIME, 320, 192, 12.0f, SM_ROWMB_SLICE, false, 1 // One slice per MB row
   },
   {
-      "res/CiscoVT2people_320x192_12fps.yuv",
-      "d3760e61e38af978d5b59232d8402448812d1540", CAMERA_VIDEO_REAL_TIME, 320, 192, 12.0f, SM_SINGLE_SLICE, true, 1
+    "res/CiscoVT2people_320x192_12fps.yuv",
+    "e64ba75456c821ca35a949eda89f85bff8ee69fa", CAMERA_VIDEO_REAL_TIME, 320, 192, 12.0f, SM_SINGLE_SLICE, true, 1
   },
   {
-      "res/CiscoVT2people_320x192_12fps.yuv",
-      "a74ae382356098fb5cce216a97f2c0cef00a0a9d", CAMERA_VIDEO_REAL_TIME, 320, 192, 12.0f, SM_SINGLE_SLICE, false, 2
+    "res/CiscoVT2people_320x192_12fps.yuv",
+    "684e6d141ada776892bdb01ee93efe475983ed36", CAMERA_VIDEO_REAL_TIME, 320, 192, 12.0f, SM_SINGLE_SLICE, false, 2
   },
   {
-      "res/Cisco_Absolute_Power_1280x720_30fps.yuv",
-      "76b26c32dd3b400d3dccee0e8a52581f5c2588bb", CAMERA_VIDEO_REAL_TIME, 1280, 720, 30.0f, SM_DYN_SLICE, false, 1
+    "res/Cisco_Absolute_Power_1280x720_30fps.yuv",
+    "f4377e3d23748d5f997cd286bc71cc75fbc72013", CAMERA_VIDEO_REAL_TIME, 1280, 720, 30.0f, SM_DYN_SLICE, false, 1
   },
   {
-      "res/CiscoVT2people_320x192_12fps.yuv",
-      "", SCREEN_CONTENT_REAL_TIME, 320, 192, 12.0f, SM_SINGLE_SLICE, false, 1
+    "res/CiscoVT2people_320x192_12fps.yuv",
+    "", SCREEN_CONTENT_REAL_TIME, 320, 192, 12.0f, SM_SINGLE_SLICE, false, 1
   },
   {
-     "res/CiscoVT2people_160x96_6fps.yuv",
-      "", SCREEN_CONTENT_REAL_TIME, 160, 96, 6.0f, SM_SINGLE_SLICE, false, 1
+    "res/CiscoVT2people_160x96_6fps.yuv",
+    "", SCREEN_CONTENT_REAL_TIME, 160, 96, 6.0f, SM_SINGLE_SLICE, false, 1
   },
   {
-      "res/Static_152_100.yuv",
-      "", SCREEN_CONTENT_REAL_TIME, 152, 100, 6.0f, SM_SINGLE_SLICE, false, 1
+    "res/Static_152_100.yuv",
+    "", SCREEN_CONTENT_REAL_TIME, 152, 100, 6.0f, SM_SINGLE_SLICE, false, 1
   }
 };
 
-INSTANTIATE_TEST_CASE_P(EncodeFile, EncoderOutputTest,
-    ::testing::ValuesIn(kFileParamArray));
+INSTANTIATE_TEST_CASE_P (EncodeFile, EncoderOutputTest,
+                         ::testing::ValuesIn (kFileParamArray));

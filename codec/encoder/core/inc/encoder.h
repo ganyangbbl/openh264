@@ -86,17 +86,17 @@ void InitFrameCoding (sWelsEncCtx* pEncCtx, const EVideoFrameType keFrameType);
 
 EVideoFrameType DecideFrameType (sWelsEncCtx* pEncCtx, const int8_t kiSpatialNum);
 
-int32_t GetTemporalLevel (SDLayerParam* fDlp, const int32_t kiFrameNum, const int32_t kiGopSize);
+int32_t GetTemporalLevel (SSpatialLayerInternal* fDlp, const int32_t kiFrameNum, const int32_t kiGopSize);
 /*!
  * \brief	Dump reconstruction for dependency layer
  */
 
-extern "C" void DumpDependencyRec (SPicture* pSrcPic, const char* kpFileName, const int8_t kiDid);
+extern "C" void DumpDependencyRec (SPicture* pSrcPic, const char* kpFileName, const int8_t kiDid, bool bAppend);
 
 /*!
  * \brief	Dump the reconstruction pictures
  */
-void DumpRecFrame (SPicture* pSrcPic, const char* kpFileName);
+void DumpRecFrame (SPicture* pSrcPic, const char* kpFileName, bool bAppend);
 
 
 /*!

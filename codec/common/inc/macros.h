@@ -44,6 +44,7 @@
 #include <assert.h>
 #include "typedefs.h"
 
+
 /*
 * ENFORCE_STACK_ALIGN_1D: force 1 dimension local data aligned in stack
 * _tp: type
@@ -72,20 +73,10 @@
 #endif
 
 #define ALIGNED_DECLARE( type, var, n ) __declspec(align(n)) type var
-#define __align16(t,v) __declspec(align(16)) t v
-#define ALIGNED_DECLARE_MATRIX_1D(name,size,type,alignment) \
-	__declspec(align(alignment)) type name[(size)]
-#define ALIGNED_DECLARE_MATRIX_2D(name,sizex,sizey,type,alignment) \
-__declspec(align(alignment)) type name[(sizex)*(sizey)]
 
 #elif defined(__GNUC__)
 
 #define ALIGNED_DECLARE( type, var, n ) type var __attribute__((aligned(n)))
-#define __align16(t,v) t v __attribute__ ((aligned (16)))
-#define ALIGNED_DECLARE_MATRIX_1D(name,size,type,alignment) \
-	type name[size] __attribute__((aligned(alignment)))
-#define ALIGNED_DECLARE_MATRIX_2D(name,sizex,sizey,type,alignment) \
-	type name[(sizex)*(sizey)] __attribute__((aligned(alignment)))
 #endif//_MSC_VER
 
 
@@ -124,6 +115,14 @@ __declspec(align(alignment)) type name[(sizex)*(sizey)]
 #ifndef WELS_ROUND
 #define WELS_ROUND(x)	((int32_t)(0.5+(x)))
 #endif//WELS_ROUND
+
+#ifndef WELS_DIV_ROUND
+#define WELS_DIV_ROUND(x,y)	((int32_t)((y)==0?((x)/((y)+1)):(((y)/2+(x))/(y))))
+#endif//WELS_DIV_ROUND
+
+#ifndef WELS_DIV_ROUND64
+#define WELS_DIV_ROUND64(x,y)	((int64_t)((y)==0?((x)/((y)+1)):(((y)/2+(x))/(y))))
+#endif//WELS_DIV_ROUND64
 
 #define WELS_NON_ZERO_COUNT_AVERAGE(nC,nA,nB) {		\
     nC = nA + nB + 1;                      \

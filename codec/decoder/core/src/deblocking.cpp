@@ -647,7 +647,7 @@ void WelsDeblockingFilterSlice (PWelsDecoderContext pCtx, PDeblockingFilterMbFun
   pFilter.iCsStride[0] = pCtx->pDec->iLinesize[0];
   pFilter.iCsStride[1] = pCtx->pDec->iLinesize[1];
 
-  pFilter.eSliceType = (ESliceType) pCurDqLayer->sLayerInfo.sSliceInLayer.eSliceType;
+  pFilter.eSliceType = (EWelsSliceType) pCurDqLayer->sLayerInfo.sSliceInLayer.eSliceType;
 
   pFilter.iSliceAlphaC0Offset = pSliceHeaderExt->sSliceHeader.iSliceAlphaC0Offset;
   pFilter.iSliceBetaOffset     = pSliceHeaderExt->sSliceHeader.iSliceBetaOffset;
@@ -730,6 +730,20 @@ void  DeblockingInit (SDeblockingFunc*  pFunc,  int32_t iCpu) {
     pFunc->pfChromaDeblockingEQ4Ver     = DeblockChromaEq4V_neon;
     pFunc->pfChromaDeblockingLT4Hor     = DeblockChromaLt4H_neon;
     pFunc->pfChromaDeblockingEQ4Hor      = DeblockChromaEq4H_neon;
+  }
+#endif
+
+#if defined(HAVE_NEON_AARCH64)
+  if (iCpu & WELS_CPU_NEON) {
+    pFunc->pfLumaDeblockingLT4Ver		= DeblockLumaLt4V_AArch64_neon;
+    pFunc->pfLumaDeblockingEQ4Ver		= DeblockLumaEq4V_AArch64_neon;
+    pFunc->pfLumaDeblockingLT4Hor		= DeblockLumaLt4H_AArch64_neon;
+    pFunc->pfLumaDeblockingEQ4Hor		= DeblockLumaEq4H_AArch64_neon;
+
+    pFunc->pfChromaDeblockingLT4Ver     = DeblockChromaLt4V_AArch64_neon;
+    pFunc->pfChromaDeblockingEQ4Ver     = DeblockChromaEq4V_AArch64_neon;
+    pFunc->pfChromaDeblockingLT4Hor     = DeblockChromaLt4H_AArch64_neon;
+    pFunc->pfChromaDeblockingEQ4Hor      = DeblockChromaEq4H_AArch64_neon;
   }
 #endif
 }
