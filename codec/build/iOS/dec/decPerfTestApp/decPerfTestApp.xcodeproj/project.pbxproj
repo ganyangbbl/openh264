@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A5A0324119669E5F00360D6D /* read_config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5A0324019669E5F00360D6D /* read_config.cpp */; };
 		C9B8E2A0190E495E0035243C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B8E29F190E495E0035243C /* Foundation.framework */; };
 		C9B8E2A2190E495E0035243C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B8E2A1190E495E0035243C /* CoreGraphics.framework */; };
 		C9B8E2A4190E495E0035243C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B8E2A3190E495E0035243C /* UIKit.framework */; };
@@ -19,7 +20,6 @@
 		C9B8E2BB190E495E0035243C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9B8E2BA190E495E0035243C /* Images.xcassets */; };
 		C9B8E2E3190E4A350035243C /* d3d9_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9B8E2E0190E4A350035243C /* d3d9_utils.cpp */; };
 		C9B8E2E4190E4A350035243C /* h264dec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9B8E2E1190E4A350035243C /* h264dec.cpp */; };
-		C9B8E2E5190E4A350035243C /* read_config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9B8E2E2190E4A350035243C /* read_config.cpp */; };
 		C9B8E31C190E4EF10035243C /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B8E2F5190E4A970035243C /* libcommon.a */; };
 		C9B8E31D190E4EF40035243C /* libwelsdec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B8E2EC190E4A8D0035243C /* libwelsdec.a */; };
 		C9B8E328190E51240035243C /* UIDevice-Hardware.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B8E327190E51240035243C /* UIDevice-Hardware.m */; };
@@ -34,13 +34,6 @@
 			remoteGlobalIDString = 4CE4427918B6FC360017DF25;
 			remoteInfo = welsdec;
 		};
-		C9B8E2ED190E4A8D0035243C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C9B8E2E6190E4A8D0035243C /* welsdec.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4CE4428918B6FC360017DF25;
-			remoteInfo = welsdecTests;
-		};
 		C9B8E2F4190E4A970035243C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C9B8E2EF190E4A970035243C /* common.xcodeproj */;
@@ -48,16 +41,10 @@
 			remoteGlobalIDString = 4CE443D518B722CD0017DF25;
 			remoteInfo = common;
 		};
-		C9B8E2F6190E4A970035243C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C9B8E2EF190E4A970035243C /* common.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4CE443E518B722CD0017DF25;
-			remoteInfo = commonTests;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A5A0324019669E5F00360D6D /* read_config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = read_config.cpp; path = ../../../../../console/common/src/read_config.cpp; sourceTree = "<group>"; };
 		C9B8E29C190E495E0035243C /* decPerfTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = decPerfTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9B8E29F190E495E0035243C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C9B8E2A1190E495E0035243C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -78,7 +65,6 @@
 		C9B8E2DF190E4A230035243C /* read_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = read_config.h; path = ../../../../../console/dec/inc/read_config.h; sourceTree = "<group>"; };
 		C9B8E2E0190E4A350035243C /* d3d9_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = d3d9_utils.cpp; path = ../../../../../console/dec/src/d3d9_utils.cpp; sourceTree = "<group>"; };
 		C9B8E2E1190E4A350035243C /* h264dec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = h264dec.cpp; path = ../../../../../console/dec/src/h264dec.cpp; sourceTree = "<group>"; };
-		C9B8E2E2190E4A350035243C /* read_config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = read_config.cpp; path = ../../../../../console/dec/src/read_config.cpp; sourceTree = "<group>"; };
 		C9B8E2E6190E4A8D0035243C /* welsdec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = welsdec.xcodeproj; path = ../welsdec/welsdec.xcodeproj; sourceTree = "<group>"; };
 		C9B8E2EF190E4A970035243C /* common.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = common.xcodeproj; path = ../../common/common.xcodeproj; sourceTree = "<group>"; };
 		C9B8E326190E51240035243C /* UIDevice-Hardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice-Hardware.h"; sourceTree = "<group>"; };
@@ -183,9 +169,9 @@
 		C9B8E2DD190E4A080035243C /* src */ = {
 			isa = PBXGroup;
 			children = (
+				A5A0324019669E5F00360D6D /* read_config.cpp */,
 				C9B8E2E0190E4A350035243C /* d3d9_utils.cpp */,
 				C9B8E2E1190E4A350035243C /* h264dec.cpp */,
-				C9B8E2E2190E4A350035243C /* read_config.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -194,7 +180,6 @@
 			isa = PBXGroup;
 			children = (
 				C9B8E2EC190E4A8D0035243C /* libwelsdec.a */,
-				C9B8E2EE190E4A8D0035243C /* welsdecTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -203,7 +188,6 @@
 			isa = PBXGroup;
 			children = (
 				C9B8E2F5190E4A970035243C /* libcommon.a */,
-				C9B8E2F7190E4A970035243C /* commonTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -273,25 +257,11 @@
 			remoteRef = C9B8E2EB190E4A8D0035243C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		C9B8E2EE190E4A8D0035243C /* welsdecTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = welsdecTests.xctest;
-			remoteRef = C9B8E2ED190E4A8D0035243C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		C9B8E2F5190E4A970035243C /* libcommon.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libcommon.a;
 			remoteRef = C9B8E2F4190E4A970035243C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		C9B8E2F7190E4A970035243C /* commonTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = commonTests.xctest;
-			remoteRef = C9B8E2F6190E4A970035243C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -317,8 +287,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9B8E2B9190E495E0035243C /* ViewController.mm in Sources */,
-				C9B8E2E5190E4A350035243C /* read_config.cpp in Sources */,
 				C9B8E2E4190E4A350035243C /* h264dec.cpp in Sources */,
+				A5A0324119669E5F00360D6D /* read_config.cpp in Sources */,
 				C9B8E2B0190E495E0035243C /* AppDelegate.m in Sources */,
 				C9B8E2AC190E495E0035243C /* main.m in Sources */,
 				C9B8E2E3190E4A350035243C /* d3d9_utils.cpp in Sources */,
@@ -451,6 +421,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"\"$(SRCROOT)/../../../../api/svc\"",
 					"\"$(SRCROOT)/../../../../common/inc\"",
+					"\"$(SRCROOT)/../../../../console/common/inc\"",
 				);
 				INFOPLIST_FILE = "decPerfTestApp/decPerfTestApp-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
@@ -476,6 +447,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"\"$(SRCROOT)/../../../../api/svc\"",
 					"\"$(SRCROOT)/../../../../common/inc\"",
+					"\"$(SRCROOT)/../../../../console/common/inc\"",
 				);
 				INFOPLIST_FILE = "decPerfTestApp/decPerfTestApp-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;

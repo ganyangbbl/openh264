@@ -19,9 +19,9 @@ class GenerateCase:
         self.pattern_720p = "720p"
 
         if platform == "ios":
-            self.enccfgFilename = "welsenc_ios.cfg"
+            self.enccfgFilename = "welsenc.cfg"
         elif platform == "android":
-            self.enccfgFilename = "welsenc_android.cfg"
+            self.enccfgFilename = "welsenc.cfg"
         else:
             self.enccfgFilename = "welsenc.cfg"
         self.layercfgFilename = "layer2.cfg"

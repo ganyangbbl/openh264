@@ -22,7 +22,7 @@ CODEC_PATH := ../../../../
 CONSOLE_ENC_PATH := ../../../../console/enc
 LOCAL_SRC_FILES := \
             $(CONSOLE_ENC_PATH)/src/welsenc.cpp \
-            $(CONSOLE_ENC_PATH)/src/read_config.cpp \
+            $(CONSOLE_ENC_PATH)/../common/src/read_config.cpp \
             $(CODEC_PATH)/common/src/logging.cpp \
             welsenc_jni.cpp
 

@@ -22,7 +22,7 @@ CODEC_PATH := ../../../../
 CONSOLE_DEC_PATH := ../../../../console/dec
 LOCAL_SRC_FILES := \
             $(CONSOLE_DEC_PATH)/src/h264dec.cpp \
-            $(CONSOLE_DEC_PATH)/src/read_config.cpp \
+            $(CONSOLE_DEC_PATH)/../common/src/read_config.cpp \
             $(CONSOLE_DEC_PATH)/src/d3d9_utils.cpp \
             $(CODEC_PATH)/common/src/logging.cpp \
             welsdec_jni.cpp
