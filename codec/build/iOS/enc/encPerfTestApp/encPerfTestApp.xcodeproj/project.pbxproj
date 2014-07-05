@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		A5A0323B19669D6100360D6D /* read_config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5A0323A19669D6100360D6D /* read_config.cpp */; };
 		A5A032491966A79900360D6D /* welsenc.cfg in Resources */ = {isa = PBXBuildFile; fileRef = A5A032481966A79900360D6D /* welsenc.cfg */; };
-		A5A0324B1966A7BC00360D6D /* CiscoVT_2people_640x384_25fps_900.yuv in Resources */ = {isa = PBXBuildFile; fileRef = A5A0324A1966A7BC00360D6D /* CiscoVT_2people_640x384_25fps_900.yuv */; };
 		C93BFC4D190A4B40004B5457 /* UIDevice-Hardware.m in Sources */ = {isa = PBXBuildFile; fileRef = C93BFC4C190A4B40004B5457 /* UIDevice-Hardware.m */; };
 		C945B533190639E000F088E4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C945B532190639E000F088E4 /* Foundation.framework */; };
 		C945B535190639E000F088E4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C945B534190639E000F088E4 /* CoreGraphics.framework */; };
@@ -56,7 +55,6 @@
 /* Begin PBXFileReference section */
 		A5A0323A19669D6100360D6D /* read_config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = read_config.cpp; path = ../../../../../console/common/src/read_config.cpp; sourceTree = "<group>"; };
 		A5A032481966A79900360D6D /* welsenc.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = welsenc.cfg; path = ../../../../../../testbin/welsenc.cfg; sourceTree = "<group>"; };
-		A5A0324A1966A7BC00360D6D /* CiscoVT_2people_640x384_25fps_900.yuv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CiscoVT_2people_640x384_25fps_900.yuv; path = ../../../../../../../TestVideo/CiscoVT_2people_640x384_25fps_900.yuv; sourceTree = "<group>"; };
 		C93BFC4B190A4B40004B5457 /* UIDevice-Hardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice-Hardware.h"; sourceTree = "<group>"; };
 		C93BFC4C190A4B40004B5457 /* UIDevice-Hardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice-Hardware.m"; sourceTree = "<group>"; };
 		C945B52F190639E000F088E4 /* encPerfTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = encPerfTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -153,7 +151,6 @@
 		C945B539190639E000F088E4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				A5A0324A1966A7BC00360D6D /* CiscoVT_2people_640x384_25fps_900.yuv */,
 				A5A032481966A79900360D6D /* welsenc.cfg */,
 				C9B8E347190E5C930035243C /* enc_caselist.cfg */,
 				C945B61E19066C5700F088E4 /* layer2.cfg */,
@@ -312,7 +309,6 @@
 				C945B54E190639E000F088E4 /* Images.xcassets in Resources */,
 				C945B546190639E000F088E4 /* Main_iPhone.storyboard in Resources */,
 				C945B53D190639E000F088E4 /* InfoPlist.strings in Resources */,
-				A5A0324B1966A7BC00360D6D /* CiscoVT_2people_640x384_25fps_900.yuv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
