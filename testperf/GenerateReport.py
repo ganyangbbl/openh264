@@ -32,7 +32,7 @@ class GenerateReport:
         self.fout_reportfile.close()
 
     def Do(self):
-        self.fout_reportfile.write("Sequence,Width,Height,Frame Num,Enc FPS,Enc CPU,Dec FPS,Dec CPU\n")
+        self.fout_reportfile.write("Sequence,Width,Height,Frame Num,Bitrate,Enc FPS,Enc CPU,Dec FPS,Dec CPU\n")
         while True:
             enc_line = self.fin_encfile.readline()
             dec_line = self.fin_decfile.readline()
