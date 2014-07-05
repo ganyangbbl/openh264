@@ -11,6 +11,8 @@ class GenerateCase:
         self.pattern_resolution = "(\d+)x(\d+)"
         self.pattern_testsequence = "TestSequence"
         self.pattern_targetbitrate = "TargetBitrate"
+        self.pattern_qp = "QP"
+        self.pattern_rc = "RC_MODE"
         self.pattern_end = "#=+#"
 
         self.pattern_90p = "90p"
@@ -49,6 +51,8 @@ class GenerateCase:
     def Do(self):
         sequence_info = []
         targetbitrate_info = []
+        qp_info = []
+        rc_info = []
         
         while True:
             line = self.fin_casefile.readline()
@@ -59,10 +63,14 @@ class GenerateCase:
                     sequence_info = self.ParseTestSet()
                 if self.ParseCaseBlock(line,self.pattern_targetbitrate):
                     targetbitrate_info = self.ParseTestSet()
+                if self.ParseCaseBlock(line,self.pattern_qp):
+                    qp_info = self.ParseParamSet()
+                if self.ParseCaseBlock(line,self.pattern_rc):
+                    rc_info = self.ParseParamSet()
             else:
                 break
 
-        self.WriteCase(sequence_info,targetbitrate_info)
+        self.WriteCase(sequence_info,targetbitrate_info,qp_info,rc_info)
 
     def ParseCaseBlock(self,line,keyword):
         pattern_caseblock = "#+%s#+"%(keyword)
@@ -100,7 +108,24 @@ class GenerateCase:
                 break
         return set_info
 
-    def WriteCase(self,sequence_info,bitrate_info):
+    def ParseParamSet(self):
+        param_info = []
+        while True:
+            line = self.fin_casefile.readline()
+            if line:
+                if line[0] == '\n':
+                    continue
+                elif re.search(self.pattern_end,line):
+                    break
+                elif line[0] == '#':
+                    continue
+                else:
+                    param_info = line.split()
+            else:
+                break
+        return param_info
+
+    def WriteCase(self,sequence_info,bitrate_info,qp_info,rc_info):
         if len(sequence_info) == 0:
             strErr = "No test sequence!\n"
             print strErr
@@ -120,16 +145,29 @@ class GenerateCase:
                           %(self.enccfgFilename,sequence[seq_index],bsFilename, \
                             self.layercfgFilename,width,height,width,height)
                 count = 0
-                for bit_index in range(0,len(bitrate)):
-                    command_bit = command_seq+" -ltarb 0 %s"%(bitrate[bit_index])
-                    enc_command = command_bit+"\n"
-                    enc_command = enc_command.replace(".264","_%d.264"%(count))
-                    dec_command = "dummy %s %s\n"%(bsFilename,yuvFilename)
-                    dec_command = dec_command.replace(".264","_%d.264"%(count))
-                    count += 1
-                    self.fout_enclistfile.write(enc_command)
-                    if self.fout_declistfile != "":
-                        self.fout_declistfile.write(dec_command)
+                for rc_index in range(0,len(rc_info)):
+                    if rc_info[rc_index] != '-1':
+                        for bit_index in range(0,len(bitrate)):
+                            command_bit = command_seq+" -rc %s -ltarb 0 %s"%(rc_info[rc_index],bitrate[bit_index])
+                            enc_command = command_bit+"\n"
+                            enc_command = enc_command.replace(".264","_%d.264"%(count))
+                            dec_command = "dummy %s %s\n"%(bsFilename,yuvFilename)
+                            dec_command = dec_command.replace(".264","_%d.264"%(count))
+                            count += 1
+                            self.fout_enclistfile.write(enc_command)
+                            if self.fout_declistfile != "":
+                                self.fout_declistfile.write(dec_command)
+                    else:
+                        for qp_index in range(0,len(qp_info)):
+                            command_qp = command_seq+" -rc -1 -lqp 0 %s"%(qp_info[qp_index])
+                            enc_command = command_qp+"\n"
+                            enc_command = enc_command.replace(".264","_%d.264"%(count))
+                            dec_command = "dummy %s %s\n"%(bsFilename,yuvFilename)
+                            dec_command = dec_command.replace(".264","_%d.264"%(count))
+                            count += 1
+                            self.fout_enclistfile.write(enc_command)
+                            if self.fout_declistfile != "":
+                                self.fout_declistfile.write(dec_command)
         
 def main():
     ListFilename = ["",""]
