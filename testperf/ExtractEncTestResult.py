@@ -13,10 +13,11 @@ class ExtractEncTestResult:
         self.pattern_width = "Width:"
         self.pattern_height = "Height:"
         self.pattern_frames = "Frames:"
+        self.pattern_bitrate = "Bitrate:"
         self.pattern_FPS = "FPS:"
         self.pattern_CpuUsage = "CPU Usage:"
 
-        self.test_info = ["","","","","",""]
+        self.test_info = ["","","","","","",""]
         self.platform = platform
 
     def OpenFile(self, LogFilename, ResultFilename):
@@ -75,9 +76,12 @@ class ExtractEncTestResult:
                 if re.search(self.pattern_frames,line):
                     info = line.partition(self.pattern_frames)
                     self.test_info[3] = info[2].split()[0]
+                if re.search(self.pattern_bitrate,line):
+                    info = line.partition(self.pattern_bitrate)
+                    self.test_info[4] = info[2].split()[0]
                 if re.search(self.pattern_FPS,line):
                     info = line.partition(self.pattern_FPS)
-                    self.test_info[4] = info[2].split()[0]
+                    self.test_info[5] = info[2].split()[0]
                 if re.search(self.pattern_CpuUsage,line):
                     info = line.partition(self.pattern_CpuUsage)
                     cpu_usage_array.append(string.atof(info[2].split()[0]))
@@ -93,7 +97,7 @@ class ExtractEncTestResult:
             cpu_usage_array.remove(min(cpu_usage_array))
             while min(cpu_usage_array) == 0 and len(cpu_usage_array)>1:
                 cpu_usage_array.remove(0)
-        self.test_info[5] = sum(cpu_usage_array)/len(cpu_usage_array)
+        self.test_info[6] = sum(cpu_usage_array)/len(cpu_usage_array)
 
     def WriteResult(self):
         for i in range(0,len(self.test_info)):
