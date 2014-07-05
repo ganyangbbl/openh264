@@ -649,6 +649,7 @@ int ProcessEncoding (ISVCEncoder* pPtrEnc, int argc, char** argv, bool bConfigFi
   int32_t iActualFrameEncodedCount = 0;
   int32_t iFrameIdx = 0;
   int32_t	iTotalFrameMax = -1;
+  int32_t iTotalSize = 0;
   uint8_t* pYUV = NULL;
   SSourcePicture* pSrcPic = NULL;
   uint32_t iSourceWidth, iSourceHeight, kiPicResSize;
@@ -855,6 +856,7 @@ int ProcessEncoding (ISVCEncoder* pPtrEnc, int argc, char** argv, bool bConfigFi
       }
 #endif//STICK_STREAM_SIZE
       ++ iActualFrameEncodedCount;	// excluding skipped frame time
+      iTotalSize += iFrameSize;
     } else {
       fprintf (stderr, "EncodeFrame(), ret: %d, frame index: %d.\n", iEncFrames, iFrameIdx);
     }
@@ -864,9 +866,10 @@ int ProcessEncoding (ISVCEncoder* pPtrEnc, int argc, char** argv, bool bConfigFi
 
   if (iActualFrameEncodedCount > 0) {
     double dElapsed = iTotal / 1e6;
-    printf ("Width:		%d\nHeight:		%d\nFrames:		%d\nencode time:	%f sec\nFPS:		%f fps\n",
+    printf ("Width:		%d\nHeight:		%d\nFrames:		%d\nencode time:	%f sec\nFPS:		%f fps\nBitrate:        %f kbps\n",
             sSvcParam.iPicWidth, sSvcParam.iPicHeight,
-            iActualFrameEncodedCount, dElapsed, (iActualFrameEncodedCount * 1.0) / dElapsed);
+            iActualFrameEncodedCount, dElapsed, (iActualFrameEncodedCount * 1.0) / dElapsed,
+            (iTotalSize * sSvcParam.sSpatialLayers[0].fFrameRate )/(125.0 * iTotalFrameMax));
     fflush(stdout);
   }
 INSIDE_MEM_FREE:
