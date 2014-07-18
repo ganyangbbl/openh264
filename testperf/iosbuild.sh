@@ -99,7 +99,7 @@ echo "###################################################################"
 echo "##Building libcommon, libprocessing, libwelsenc, libwelsdec and test app"
 
 OPENH264_PERFTEST_IOS_COMMON_PATH=${BASE_PATH}/../codec/build/iOS/common
-OPENH264_PERFTEST_IOS_PROCESSING_PATH=${BASE_PATH}/../codec/processing/build/iOS
+OPENH264_PERFTEST_IOS_PROCESSING_PATH=${BASE_PATH}/../codec/build/iOS/processing
 OPENH264_PERFTEST_IOS_ENCODER_PATH=${BASE_PATH}/../codec/build/iOS/enc/welsenc
 OPENH264_PERFTEST_IOS_DECODER_PATH=${BASE_PATH}/../codec/build/iOS/dec/welsdec
 OPENH264_PERFTEST_IOS_ENC_PROJECT_PATH=${BASE_PATH}/../codec/build/iOS/enc/encPerfTestApp
@@ -110,7 +110,7 @@ OPENH264_PERFTEST_IOS_STD_OUT_ERR=/dev/null
 
 function buildProject()
 {
-	xcodebuild -project $1.xcodeproj -target $2 -configuration $3 -sdk $4 clean build > ${OPENH264_PERFTEST_IOS_STD_OUT_ERR} 2>&1
+	xcodebuild -project $1.xcodeproj -target $2 -configuration $3 -sdk $4 clean build #> ${OPENH264_PERFTEST_IOS_STD_OUT_ERR} 2>&1
 	if [ $? == 0 ]; then
 		echo "build $1 $3 $4 successfully"
 		return 0;
