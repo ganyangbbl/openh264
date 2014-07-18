@@ -21,7 +21,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\..\..\..\..\bin\win32\Release"
-			IntermediateDirectory=".\..\..\..\obj\decConsole\Release"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -42,8 +42,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\..\..\..\..\bin\win32\Release/decConsole.tlb"
-				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -54,11 +52,8 @@
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\..\..\..\obj\decConsole\Release/decConsole.pch"
-				AssemblerListingLocation=".\..\..\..\obj\decConsole\Release/"
-				ObjectFile=".\..\..\..\obj\decConsole\Release/"
-				ProgramDataBaseFileName=".\..\..\..\obj\decConsole\Release/"
 				WarningLevel="3"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -76,7 +71,6 @@
 				AdditionalDependencies="$(OutDir)\welsdec.lib"
 				OutputFile="$(OutDir)\decConsole.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\..\bin\win32"
 				ProgramDatabaseFile="$(OutDir)\decConsole.pdb"
 				GenerateMapFile="false"
 				SubSystem="1"
@@ -110,7 +104,7 @@
 		<Configuration
 			Name="Release|x64"
 			OutputDirectory=".\..\..\..\..\bin\win64\Release"
-			IntermediateDirectory=".\..\..\..\obj\decConsole\Release"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -131,9 +125,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TargetEnvironment="3"
-				TypeLibraryName=".\..\..\..\..\bin\win32\Release/decConsole.tlb"
-				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -144,11 +135,8 @@
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\..\..\..\obj\decConsole\Release/decConsole.pch"
-				AssemblerListingLocation=".\..\..\..\obj\decConsole\Release/"
-				ObjectFile=".\..\..\..\obj\decConsole\Release/"
-				ProgramDataBaseFileName=".\..\..\..\obj\decConsole\Release/"
 				WarningLevel="3"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -166,7 +154,6 @@
 				AdditionalDependencies="$(OutDir)\welsdec.lib"
 				OutputFile="$(OutDir)\decConsole.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\..\bin\win64"
 				ProgramDatabaseFile="$(OutDir)\decConsole.pdb"
 				GenerateMapFile="false"
 				SubSystem="1"
@@ -200,7 +187,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\..\..\..\..\bin\win32\Debug"
-			IntermediateDirectory=".\..\..\..\obj\decConsole\Debug"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -221,8 +208,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\..\..\..\..\bin\win32\Debug/decConsole.tlb"
-				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -232,11 +217,6 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				PrecompiledHeaderFile=".\..\..\..\obj\decConsole\Debug/decConsole.pch"
-				AssemblerListingLocation=".\..\..\..\obj\decConsole\Debug/"
-				ObjectFile=".\..\..\..\obj\decConsole\Debug/"
-				ProgramDataBaseFileName=".\..\..\..\obj\decConsole\Debug/"
-				BrowseInformation="1"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -256,7 +236,6 @@
 				AdditionalDependencies="$(OutDir)\welsdec.lib"
 				OutputFile="$(OutDir)\decConsoled.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\..\bin\win32"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)\decConsoled.pdb"
 				SubSystem="1"
@@ -290,7 +269,7 @@
 		<Configuration
 			Name="Debug|x64"
 			OutputDirectory=".\..\..\..\..\bin\win64\Debug"
-			IntermediateDirectory=".\..\..\..\obj\decConsole\Debug"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -311,9 +290,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TargetEnvironment="3"
-				TypeLibraryName=".\..\..\..\..\bin\win32\Debug/decConsole.tlb"
-				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -323,11 +299,6 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				PrecompiledHeaderFile=".\..\..\..\obj\decConsole\Debug/decConsole.pch"
-				AssemblerListingLocation=".\..\..\..\obj\decConsole\Debug/"
-				ObjectFile=".\..\..\..\obj\decConsole\Debug/"
-				ProgramDataBaseFileName=".\..\..\..\obj\decConsole\Debug/"
-				BrowseInformation="1"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -347,7 +318,6 @@
 				AdditionalDependencies="$(OutDir)\welsdec.lib"
 				OutputFile="$(OutDir)\decConsoled.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\..\bin\win64"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)\decConsoled.pdb"
 				SubSystem="1"

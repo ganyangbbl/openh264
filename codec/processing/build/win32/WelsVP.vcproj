@@ -25,7 +25,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\..\..\..\..\bin\win32\Debug"
-			IntermediateDirectory=".\..\..\..\obj\vp\Debug"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
 			>
@@ -56,8 +56,6 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				AssemblerListingLocation=""
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -72,7 +70,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				LinkLibraryDependencies="true"
 				OutputFile="$(OutDir)\welsvp.dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="../../src/common/WelsVP.def"
@@ -108,7 +105,7 @@
 		<Configuration
 			Name="Debug|x64"
 			OutputDirectory=".\..\..\..\..\bin\win64\Debug"
-			IntermediateDirectory=".\..\..\..\obj\vp\Debug"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
 			>
@@ -140,8 +137,6 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				AssemblerListingLocation=""
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -156,7 +151,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				LinkLibraryDependencies="true"
 				OutputFile="$(OutDir)\welsvp.dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="../../src/common/WelsVP.def"
@@ -192,7 +186,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\..\..\..\..\bin\win32\Release"
-			IntermediateDirectory=".\..\..\..\obj\vp\Release"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -220,15 +214,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				EnableIntrinsicFunctions="false"
+				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="../../../common/inc;../../interface;../../src/common"
 				PreprocessorDefinitions="NDEBUG;_USRDLL;X86_ASM"
+				StringPooling="true"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="false"
-				UsePrecompiledHeader="0"
+				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -251,8 +245,6 @@
 				MapFileName=""
 				MapExports="false"
 				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -281,7 +273,7 @@
 		<Configuration
 			Name="Release|x64"
 			OutputDirectory=".\..\..\..\..\bin\win64\Release"
-			IntermediateDirectory=".\..\..\..\obj\vp\Release"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -310,15 +302,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				EnableIntrinsicFunctions="false"
+				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="../../../common/inc;../../interface;../../src/common"
 				PreprocessorDefinitions="NDEBUG;_USRDLL;X86_ASM"
+				StringPooling="true"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="false"
-				UsePrecompiledHeader="0"
+				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -341,8 +333,6 @@
 				MapFileName=""
 				MapExports="false"
 				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
 				TargetMachine="17"
 			/>
 			<Tool

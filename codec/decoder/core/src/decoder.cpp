@@ -294,6 +294,9 @@ void WelsOpenDecoder (PWelsDecoderContext pCtx) {
   pCtx->bReferenceLostAtT0Flag	= true;	// should be true to waiting IDR at incoming AU bits following, 6/4/2010
 #endif //LONG_TERM_REF
   pCtx->bNewSeqBegin = true;
+  pCtx->bDecErrorConedFlag = false; //default: decoder normal status
+  pCtx->bPrintFrameErrorTraceFlag = true;
+  pCtx->iIgnoredErrorInfoPacketCount = 0;
 }
 
 /*!
@@ -311,6 +314,8 @@ void WelsCloseDecoder (PWelsDecoderContext pCtx) {
 #else
   pCtx->bReferenceLostAtT0Flag = false;
 #endif
+  pCtx->bNewSeqBegin = false;
+  pCtx->bPrintFrameErrorTraceFlag = false;
 }
 
 /*!
@@ -336,7 +341,7 @@ int32_t DecoderConfigParam (PWelsDecoderContext pCtx, const SDecodingParam* kpPa
     pCtx->eVideoType = VIDEO_BITSTREAM_DEFAULT;
   }
 
-  WelsLog (&(pCtx->sLogCtx), WELS_LOG_INFO, "eVideoType: %d\n", pCtx->eVideoType);
+  WelsLog (& (pCtx->sLogCtx), WELS_LOG_INFO, "eVideoType: %d\n", pCtx->eVideoType);
 
   return 0;
 }
@@ -428,6 +433,7 @@ int32_t WelsDecodeBs (PWelsDecoderContext pCtx, const uint8_t* kpBsBuf, const in
 
     if (NULL == DetectStartCodePrefix (kpBsBuf, &iOffset,
                                        kiBsLen)) {  //CAN'T find the 00 00 01 start prefix from the source buffer
+      pCtx->iErrorCode |= dsBitstreamError;
       return dsBitstreamError;
     }
 
@@ -456,6 +462,9 @@ int32_t WelsDecodeBs (PWelsDecoderContext pCtx, const uint8_t* kpBsBuf, const in
 
           iConsumedBytes = 0;
           pNalPayload	= ParseNalHeader (pCtx, &pCtx->sCurNalHead, pDstNal, iDstIdx, pSrcNal - 3, iSrcIdx + 3, &iConsumedBytes);
+          if ((pCtx->iErrorConMethod != ERROR_CON_DISABLE) && (IS_VCL_NAL (pCtx->sCurNalHead.eNalUnitType, 1))) {
+            CheckAndDoEC (pCtx, ppDst, pDstBufInfo);
+          }
           if (IS_PARAM_SETS_NALS (pCtx->sCurNalHead.eNalUnitType) && pNalPayload) {
             iRet = ParseNonVclNal (pCtx, pNalPayload, iDstIdx - iConsumedBytes);
           }
@@ -468,7 +477,8 @@ int32_t WelsDecodeBs (PWelsDecoderContext pCtx, const uint8_t* kpBsBuf, const in
 #else
               pCtx->bReferenceLostAtT0Flag = true;
 #endif
-              ResetParameterSetsState (pCtx);
+              if ((pCtx->iErrorConMethod == ERROR_CON_DISABLE) || (dsOutOfMemory & pCtx->iErrorCode))
+                ResetParameterSetsState (pCtx);
 
               if (dsOutOfMemory & pCtx->iErrorCode) {
                 return pCtx->iErrorCode;
@@ -483,7 +493,8 @@ int32_t WelsDecodeBs (PWelsDecoderContext pCtx, const uint8_t* kpBsBuf, const in
 #else
               pCtx->bReferenceLostAtT0Flag = true;
 #endif
-              ResetParameterSetsState (pCtx);
+              if ((pCtx->iErrorConMethod == ERROR_CON_DISABLE) || (dsOutOfMemory & pCtx->iErrorCode)) 
+                ResetParameterSetsState (pCtx);
             }
             return pCtx->iErrorCode;
           }
@@ -526,7 +537,8 @@ int32_t WelsDecodeBs (PWelsDecoderContext pCtx, const uint8_t* kpBsBuf, const in
 #else
         pCtx->bReferenceLostAtT0Flag = true;
 #endif
-        ResetParameterSetsState (pCtx);
+        if ((pCtx->iErrorConMethod == ERROR_CON_DISABLE) || (dsOutOfMemory & pCtx->iErrorCode))
+          ResetParameterSetsState (pCtx);
         return pCtx->iErrorCode;
       }
     }
@@ -561,7 +573,8 @@ int32_t WelsDecodeBs (PWelsDecoderContext pCtx, const uint8_t* kpBsBuf, const in
 #else
         pCtx->bReferenceLostAtT0Flag = true;
 #endif
-        ResetParameterSetsState (pCtx);
+        if ((pCtx->iErrorConMethod == ERROR_CON_DISABLE) || (dsOutOfMemory & pCtx->iErrorCode))
+          ResetParameterSetsState (pCtx);
         return pCtx->iErrorCode;
       }
     }
@@ -600,14 +613,16 @@ int32_t SyncPictureResolutionExt (PWelsDecoderContext pCtx, const int32_t kiMbWi
 
   iErr = WelsRequestMem (pCtx, kiMbWidth, kiMbHeight);	// common memory used
   if (ERR_NONE != iErr) {
-    WelsLog (&(pCtx->sLogCtx), WELS_LOG_WARNING, "SyncPictureResolutionExt()::WelsRequestMem--buffer allocated failure.\n");
+    WelsLog (& (pCtx->sLogCtx), WELS_LOG_WARNING,
+             "SyncPictureResolutionExt()::WelsRequestMem--buffer allocated failure.\n");
     pCtx->iErrorCode = dsOutOfMemory;
     return iErr;
   }
 
   iErr = InitialDqLayersContext (pCtx, kiPicWidth, kiPicHeight);
   if (ERR_NONE != iErr) {
-    WelsLog (&(pCtx->sLogCtx), WELS_LOG_WARNING, "SyncPictureResolutionExt()::InitialDqLayersContext--buffer allocated failure.\n");
+    WelsLog (& (pCtx->sLogCtx), WELS_LOG_WARNING,
+             "SyncPictureResolutionExt()::InitialDqLayersContext--buffer allocated failure.\n");
     pCtx->iErrorCode = dsOutOfMemory;
   }
 

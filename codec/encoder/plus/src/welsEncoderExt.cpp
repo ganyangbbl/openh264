@@ -37,7 +37,7 @@
 #include "wels_const.h"
 #include "utils.h"
 #include "macros.h"
-
+#include "version.h"
 #include "crt_util_safe_x.h"	// Safe CRT routines like util for cross platforms
 #include "ref_list_mgr_svc.h"
 
@@ -174,7 +174,7 @@ void CWelsH264SVCEncoder::InitEncoder (void) {
   }
 
   m_pWelsTrace->SetTraceLevel (WELS_LOG_ERROR);
-
+  WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO, "CWelsH264SVCEncoder::InitEncoder(), openh264 codec version = %s", VERSION_NUMBER);
 #ifdef REC_FRAME_COUNT
   WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO,
            "CWelsH264SVCEncoder::InitEncoder, m_uiCountFrameNum= %d, m_iCspInternal= 0x%x\n", m_uiCountFrameNum, m_iCspInternal);
@@ -293,14 +293,6 @@ int CWelsH264SVCEncoder::InitializeInternal (SWelsSvcCodingParam* pCfg) {
   }
 #endif//REC_FRAME_COUNT
 
-  const int32_t iColorspace = pCfg->iInputCsp;
-  if (videoFormatI420 != iColorspace) {
-    WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_ERROR, "CWelsH264SVCEncoder::Initialize(), invalid iInputCsp= %d.\n",
-             iColorspace);
-    Uninitialize();
-    return cmInitParaError;
-  }
-
   // Check valid parameters
   const int32_t iNumOfLayers = pCfg->iSpatialLayerNum;
   if (iNumOfLayers < 1 || iNumOfLayers > MAX_DEPENDENCY_LAYER) {
@@ -378,7 +370,6 @@ int CWelsH264SVCEncoder::InitializeInternal (SWelsSvcCodingParam* pCfg) {
   }
 
   const int32_t kiDecStages = WELS_LOG2 (pCfg->uiGopSize);
-  pCfg->iInputCsp			= iColorspace;
   pCfg->iTemporalLayerNum	= (int8_t) (1 + kiDecStages);
   pCfg->iLoopFilterAlphaC0Offset	= WELS_CLIP3 (pCfg->iLoopFilterAlphaC0Offset, -6, 6);
   pCfg->iLoopFilterBetaOffset		= WELS_CLIP3 (pCfg->iLoopFilterBetaOffset, -6, 6);
@@ -393,7 +384,6 @@ int CWelsH264SVCEncoder::InitializeInternal (SWelsSvcCodingParam* pCfg) {
     return cmInitParaError;
   }
 
-  m_iCspInternal	= iColorspace;
   m_bInitialFlag  = true;
 
   return cmResultSuccess;
@@ -518,23 +508,6 @@ int CWelsH264SVCEncoder::EncodeParameterSets (SFrameBSInfo* pBsInfo) {
 }
 
 /*
- * return: 0 - success; otherwise - failed;
- */
-int CWelsH264SVCEncoder::PauseFrame (const SSourcePicture* kpSrcPic, SFrameBSInfo* pBsInfo) {
-  int32_t  iReturn = cmResultSuccess;
-
-  ForceIntraFrame (true);
-
-  iReturn = EncodeFrameInternal (kpSrcPic, pBsInfo);
-  // to avoid pause frame bitstream and
-  // normal bitstream use different video channel.
-  ForceIntraFrame (true);
-
-  return (int)iReturn;
-}
-
-
-/*
  *	Force key frame
  */
 int CWelsH264SVCEncoder::ForceIntraFrame (bool bIDR) {
@@ -645,16 +618,12 @@ int CWelsH264SVCEncoder::SetOption (ENCODER_OPTION eOptionId, void* pOption) {
   case ENCODER_OPTION_SVC_ENCODE_PARAM_EXT: {	// SVC Encoding Parameter
     SEncParamExt		sEncodingParam;
     SWelsSvcCodingParam	sConfig;
-    int32_t iInputColorspace = 0;
     int32_t iTargetWidth = 0;
     int32_t iTargetHeight = 0;
 
     memcpy (&sEncodingParam, pOption, sizeof (SEncParamExt));	// confirmed_safe_unsafe_usage
     WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO,
-             "ENCODER_OPTION_SVC_ENCODE_PARAM_EXT, sEncodingParam.iInputCsp= 0x%x\n",
-             sEncodingParam.iInputCsp);
-    WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO,
-             "coding_param->iPicWidth= %d;coding_param->iPicHeight= %d;coding_param->iTargetBitrate= %d; coding_param->iMaxBitrate= %d; coding_param->iRCMode= %d;coding_param->iPaddingFlag= %d;coding_param->iTemporalLayerNum= %d;coding_param->iSpatialLayerNum= %d;coding_param->fFrameRate= %.6ff;coding_param->iInputCsp= %d;coding_param->uiIntraPeriod= %d;coding_param->bEnableSpsPpsIdAddition = %d;coding_param->bPrefixNalAddingCtrl = %d;coding_param->bEnableDenoise= %d;coding_param->bEnableBackgroundDetection= %d;coding_param->bEnableAdaptiveQuant= %d;coding_param->bEnableAdaptiveQuant= %d;coding_param->bEnableLongTermReference= %d;coding_param->iLtrMarkPeriod= %d;\n",
+             "coding_param->iPicWidth= %d;coding_param->iPicHeight= %d;coding_param->iTargetBitrate= %d; coding_param->iMaxBitrate= %d; coding_param->iRCMode= %d;coding_param->iPaddingFlag= %d;coding_param->iTemporalLayerNum= %d;coding_param->iSpatialLayerNum= %d;coding_param->fFrameRate= %.6ff;coding_param->uiIntraPeriod= %d;coding_param->bEnableSpsPpsIdAddition = %d;coding_param->bPrefixNalAddingCtrl = %d;coding_param->bEnableDenoise= %d;coding_param->bEnableBackgroundDetection= %d;coding_param->bEnableAdaptiveQuant= %d;coding_param->bEnableAdaptiveQuant= %d;coding_param->bEnableLongTermReference= %d;coding_param->iLtrMarkPeriod= %d;\n",
              sEncodingParam.iPicWidth,
              sEncodingParam.iPicHeight,
              sEncodingParam.iTargetBitrate,
@@ -664,7 +633,6 @@ int CWelsH264SVCEncoder::SetOption (ENCODER_OPTION eOptionId, void* pOption) {
              sEncodingParam.iTemporalLayerNum,
              sEncodingParam.iSpatialLayerNum,
              sEncodingParam.fMaxFrameRate,
-             sEncodingParam.iInputCsp,
              sEncodingParam.uiIntraPeriod,
              sEncodingParam.bEnableSpsPpsIdAddition,
              sEncodingParam.bPrefixNalAddingCtrl,
@@ -702,7 +670,6 @@ int CWelsH264SVCEncoder::SetOption (ENCODER_OPTION eOptionId, void* pOption) {
       return cmInitParaError;
     }
 
-    iInputColorspace	= sEncodingParam.iInputCsp;
     if (sConfig.ParamTranscode (sEncodingParam)) {
       return cmInitParaError;
     }
@@ -711,11 +678,10 @@ int CWelsH264SVCEncoder::SetOption (ENCODER_OPTION eOptionId, void* pOption) {
     }
     iTargetWidth	= sConfig.iPicWidth;
     iTargetHeight	= sConfig.iPicHeight;
-    if (m_iCspInternal != iInputColorspace || m_iMaxPicWidth != iTargetWidth
-        || m_iMaxPicHeight != iTargetHeight) {	// for color space due to changed
+    if (m_iMaxPicWidth != iTargetWidth
+        || m_iMaxPicHeight != iTargetHeight) {
       m_iMaxPicWidth	= iTargetWidth;
       m_iMaxPicHeight	= iTargetHeight;
-      m_iCspInternal	= iInputColorspace;
     }
 #ifdef REC_FRAME_COUNT
     WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO,
@@ -724,7 +690,6 @@ int CWelsH264SVCEncoder::SetOption (ENCODER_OPTION eOptionId, void* pOption) {
 #endif//REC_FRAME_COUNT
 
     /* New configuration available here */
-    sConfig.iInputCsp	= m_iCspInternal;	// I420 in default designed for presentation in encoder used internal
     sConfig.DetermineTemporalSettings();
 
     /* Check every field whether there is new request for memory block changed or else, Oct. 24, 2008 */
@@ -953,6 +918,11 @@ int CWelsH264SVCEncoder::SetOption (ENCODER_OPTION eOptionId, void* pOption) {
     m_pEncContext->iDropNumber = pValue->iDropNum;
   }
   break;
+  case ENCODER_OPTION_COMPLEXITY: {
+    int32_t iValue = * ((int32_t*)pOption);
+    m_pEncContext->pSvcParam->iComplexityMode = (ECOMPLEXITY_MODE)iValue;
+  }
+  break;
   default:
     return cmInitParaError;
   }
@@ -1053,6 +1023,10 @@ int CWelsH264SVCEncoder::GetOption (ENCODER_OPTION eOptionId, void* pOption) {
     } else {
       pInfo->iBitrate = m_pEncContext->pSvcParam->sSpatialLayers[pInfo->iLayer].iMaxSpatialBitrate;
     }
+  }
+  break;
+  case ENCODER_OPTION_COMPLEXITY: {
+    * ((int32_t*)pOption) =  m_pEncContext->pSvcParam->iComplexityMode;
   }
   break;
   default:

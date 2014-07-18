@@ -179,6 +179,14 @@ int32_t InitFunctionPointers (SWelsFuncPtrList* pFuncList, SWelsSvcCodingParam* 
   }
 #endif
 
+#if defined(HAVE_NEON_AARCH64)
+  if (uiCpuFlag & WELS_CPU_NEON) {
+    pFuncList->pfSetMemZeroSize8	= WelsSetMemZero_AArch64_neon;
+    pFuncList->pfSetMemZeroSize64Aligned16	= WelsSetMemZero_AArch64_neon;
+    pFuncList->pfSetMemZeroSize64	= WelsSetMemZero_AArch64_neon;
+  }
+#endif
+
   InitExpandPictureFunc (& (pFuncList->sExpandPicFunc), uiCpuFlag);
 
   /* Intra_Prediction_fn*/
@@ -317,10 +325,14 @@ EVideoFrameType DecideFrameType (sWelsEncCtx* pEncCtx, const int8_t kiSpatialNum
     } else {
       iFrameType = videoFrameTypeP;
     }
-    if (videoFrameTypeIDR == iFrameType) {
+    if (videoFrameTypeP == iFrameType && pEncCtx->iSkipFrameFlag > 0) {
+      -- pEncCtx->iSkipFrameFlag;
+      iFrameType = videoFrameTypeSkip;
+    } else if (videoFrameTypeIDR == iFrameType) {
       pEncCtx->iCodingIndex = 0;
       pEncCtx->bCurFrameMarkedAsSceneLtr   = true;
     }
+
   } else {
     // perform scene change detection
     if ((!pSvcParam->bEnableSceneChangeDetect) || pEncCtx->pVaa->bIdrPeriodFlag ||

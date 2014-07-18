@@ -46,6 +46,7 @@
 #include "typedefs.h"
 #include "mem_align.h"
 #include "utils.h"
+#include "version.h"
 
 //#include "macros.h"
 #include "decoder.h"
@@ -189,7 +190,7 @@ long CWelsDecoder::Initialize (const SDecodingParam* pParam) {
   }
 
   if (pParam == NULL) {
-    WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO, "CWelsDecoder::Initialize(), invalid input argument.");
+    WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_ERROR, "CWelsDecoder::Initialize(), invalid input argument.");
     return cmInitParaError;
   }
 
@@ -211,7 +212,7 @@ void CWelsDecoder::UninitDecoder (void) {
   if (NULL == m_pDecContext)
     return;
 
-  WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO, "into CWelsDecoder::uninit_decoder()..");
+  WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO, "CWelsDecoder::uninit_decoder(), openh264 codec version = %s.", VERSION_NUMBER);
 
   WelsEndDecoder (m_pDecContext);
 
@@ -221,7 +222,6 @@ void CWelsDecoder::UninitDecoder (void) {
     m_pDecContext	= NULL;
   }
 
-  WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO, "left CWelsDecoder::uninit_decoder()..");
 }
 
 // the return value of this function is not suitable, it need report failure info to upper layer.
@@ -233,7 +233,6 @@ void CWelsDecoder::InitDecoder (void) {
 
   WelsInitDecoder (m_pDecContext, &m_pWelsTrace->m_sLogCtx);
 
-  WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO, "CWelsDecoder::init_decoder().. left");
 }
 
 /*
@@ -411,9 +410,23 @@ DECODING_STATE CWelsDecoder::DecodeFrame2 (const unsigned char* kpSrc,
       }
     }
 
-    WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO, "decode failed, failure type:%d \n",
-             m_pDecContext->iErrorCode);
+    if (m_pDecContext->bPrintFrameErrorTraceFlag) {
+      WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO, "decode failed, failure type:%d \n",
+               m_pDecContext->iErrorCode);
+      m_pDecContext->bPrintFrameErrorTraceFlag = false;
+    } else {
+      m_pDecContext->iIgnoredErrorInfoPacketCount ++;
+      if (m_pDecContext->iIgnoredErrorInfoPacketCount == INT_MAX) {
+        WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_WARNING, "continuous error reached INT_MAX! Restart as 0.");
+        m_pDecContext->iIgnoredErrorInfoPacketCount = 0;
+      }
+    }
     return (DECODING_STATE)m_pDecContext->iErrorCode;
+  } else { //decoding correct, but may have ECed status
+    if (m_pDecContext->bDecErrorConedFlag) {
+      m_pDecContext->iErrorCode |= dsDataErrorConcealed;
+      return dsDataErrorConcealed;
+    }
   }
 
   return dsErrorFree;
