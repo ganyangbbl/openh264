@@ -110,7 +110,7 @@ OPENH264_PERFTEST_IOS_STD_OUT_ERR=/dev/null
 
 function buildProject()
 {
-	xcodebuild -project $1.xcodeproj -target $2 -configuration $3 -sdk $4 clean build #> ${OPENH264_PERFTEST_IOS_STD_OUT_ERR} 2>&1
+	xcodebuild -project $1.xcodeproj -target $2 -configuration $3 -sdk $4 clean build > ${OPENH264_PERFTEST_IOS_STD_OUT_ERR} 2>&1
 	if [ $? == 0 ]; then
 		echo "build $1 $3 $4 successfully"
 		return 0;
